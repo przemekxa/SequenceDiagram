@@ -32,6 +32,7 @@ struct DocumentState {
     Mode mode;
     int selectedActor;
     int selectedTransition;
+    int marginH;
 };
 
 
@@ -76,12 +77,13 @@ public:
     }
 };
 
+
+
 class ActorWindow {
 private:
     WINDOW *w;
     int width;
     int height;
-    int margin = 0;
     Document* doc;
     DocumentState* state;
 public:
@@ -92,64 +94,62 @@ public:
         state = s;
         
         int maxx = getmaxx(stdscr);
-        w = newwin(7, maxx - 2, 2, 1);
+        w = newpad(5, 100);
         width = getmaxx(w);
         height = getmaxy(w);
-        //box(w, 0, 0);
         mvhline(7, 1, '-', maxx - 2);
-        //scrollok(w, true);
-        wrefresh(w);
+        prefresh(w, 0 + state->marginH, 0, 2, 1, 6, getmaxx(stdscr) - 2);
+    }
+    
+    void adjustMargin() {
+        
+        // If the width won't allow for showing the actor
+        if( (state->selectedActor + 1) * DocumentActorWidth > (getmaxx(stdscr) - 2) ) {
+            state->marginH =
+                ((state->selectedActor + 1) * DocumentActorWidth)
+                -
+                (getmaxx(stdscr) - 2)
+                -
+                DocumentActorSpacing;
+                
+        }
+        else if(state->marginH > state->selectedActor * DocumentActorWidth) {
+            state->marginH = state->selectedActor * DocumentActorWidth;
+        }
     }
     
     void redraw() {
-        
-        int sumW = 0;
-        int dispW;
-        
-        if(state->selectedActor * DocumentActorWidth > width - DocumentActorWidth) {
-            margin = -20;
-        } else {
-            margin = 0;
-        }
-        
+                
         for(int i = 0; i < doc->actors.size(); i++) {
-            
-            if(sumW + DocumentActorWidth < width) {
-                dispW = DocumentActorLength;
-            } else {
-                dispW = width - sumW;
-            }
             
             if(i == state->selectedActor) {
                 wattron(w, A_STANDOUT);
             }
             
             if(doc->actors[i].type == ActorType::Player) {
-                mvwaddnstr(w, 0, DocumentActorWidth*i + margin, "    ()    ", dispW);
-                mvwaddnstr(w, 1, DocumentActorWidth*i, "    /\\    ", dispW);
-                mvwaddnstr(w, 2, DocumentActorWidth*i, "    /\\    ", dispW);
+                mvwprintw(w, 0, DocumentActorWidth*i, "    ()    ");
+                mvwprintw(w, 1, DocumentActorWidth*i, "    /\\    ");
+                mvwprintw(w, 2, DocumentActorWidth*i, "    /\\    ");
             } else {
-                mvwaddnstr(w, 0, DocumentActorWidth*i, "  +----+  ", dispW);
-                mvwaddnstr(w, 1, DocumentActorWidth*i, "  |    |  ", dispW);
+                mvwprintw(w, 0, DocumentActorWidth*i, "  +----+  ");
+                mvwprintw(w, 1, DocumentActorWidth*i, "  |    |  ");
                 //mvwprintw(w, 2, DocumentActorWidth*i + 1, "  +----+  ");
-                mvwaddnstr(w, 2, DocumentActorWidth*i, "  +----+  ", dispW);
+                mvwprintw(w, 2, DocumentActorWidth*i, "  +----+  ");
             }
-            mvwaddnstr(w, 3, DocumentActorWidth*i + margin, "          ", dispW);
-            mvwaddnstr(w, 4, DocumentActorWidth*i, "          ", dispW);
-            mvwaddnstr(w, 4,
+            mvwprintw(w, 3, DocumentActorWidth*i, "          ");
+            mvwprintw(w, 4, DocumentActorWidth*i, "          ");
+            mvwprintw(w, 4,
                        DocumentActorWidth*i + ( (DocumentActorLength - doc->actors[i].name.length()) / 2),
-                       doc->actors[i].name.c_str(),
-                       dispW - ((DocumentActorLength - doc->actors[i].name.length()) / 2));
+                      doc->actors[i].name.c_str());
             
             if(i == state->selectedActor) {
                 wattroff(w, A_STANDOUT);
             }
             
-            sumW += DocumentActorWidth;
             
         }
         
-        wrefresh(w);
+        prefresh(w, 0, 0 + state->marginH, 2, 1, 6, getmaxx(stdscr) - 2);
         
     }
 };
@@ -169,7 +169,7 @@ public:
     DocumentWindow() {
         
         doc = EXAMPLE_DOCUMENT;
-        state = {Mode::Actors, 0, 0};
+        state = {Mode::Actors, 0, 0, 0};
         
         actorWin = new ActorWindow(&doc, &state);
         
@@ -204,9 +204,20 @@ public:
                 } else {
                     state.selectedActor--;
                 }
+                actorWin->adjustMargin();
+                
+                
                 break;
             case KEY_RIGHT:
                 state.selectedActor = (state.selectedActor + 1) % doc.actors.size();
+                actorWin->adjustMargin();
+                
+                
+                
+                
+//                if(DocumentActorLength * (state.selectedActor + 3) > getmaxx(stdscr) - 2) {
+//                    state.marginH = DocumentActorLength;
+//                }
                 break;
             default:
                 break;
