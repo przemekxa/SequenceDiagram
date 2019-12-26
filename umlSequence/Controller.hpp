@@ -33,8 +33,8 @@ struct DocumentState {
     Mode mode;
     string documentName;
     bool changed;
-    int selectedActor;
-    int selectedSignal;
+    unsigned int selectedActor;
+    unsigned int selectedSignal;
     int marginH;
     int marginV;
 };
@@ -455,6 +455,106 @@ private:
         draw();
     }
     
+    /// Add new actor after the selected one
+    void addActorAfter() {
+        state.selectedActor++;
+        addActorBefore();
+    }
+    
+    /// Add new actor before the selected one
+    void addActorBefore() {
+        
+        for(auto& a : doc.actors) {
+            if(a.id >= state.selectedActor) {
+                a.id++;
+            }
+        }
+        for(auto& s : doc.signals) {
+            if(s.source >= state.selectedActor) s.source++;
+            if(s.destination >= state.selectedActor) s.destination++;
+        }
+        
+        Actor n { state.selectedActor, ActorType::Object, "UNNAMED" };
+        
+        doc.actors.emplace(doc.actors.begin() + state.selectedActor, n);
+        resetWindows();
+        actorWin->adjustMarginsForActor(state.selectedActor);
+        draw();
+        
+    }
+    
+    // TODO: NOT WORKING!
+    void deleteActor() {
+        
+        int deleteAt = state.selectedActor;
+        
+        for(auto& a : doc.actors) {
+            if(a.id > deleteAt) {
+                a.id--;
+            }
+        }
+        
+        for(auto& s : doc.signals) {
+            if(s.source > deleteAt) s.source++;
+            if(s.destination > deleteAt) s.destination++;
+        }
+        
+        
+        if(state.selectedActor == doc.actors.size() - 1) state.selectedActor--;
+        else state.selectedActor++;
+        
+        doc.actors.erase(doc.actors.begin() + deleteAt);
+        resetWindows();
+        actorWin->adjustMarginsForActor(state.selectedActor);
+        draw();
+    }
+    
+    void moveActorRight() {
+        if(state.selectedActor == doc.actors.size() - 1) return;
+                
+        Actor first = doc.actors[state.selectedActor];
+        first.id++;
+        Actor second = doc.actors[state.selectedActor + 1];
+        second.id--;
+        doc.actors[state.selectedActor] = second;
+        doc.actors[state.selectedActor + 1] = first;
+        
+        for(auto& s : doc.signals) {
+            if(s.source == state.selectedActor) s.source++;
+            else if(s.source == state.selectedActor + 1) s.source--;
+            if(s.destination == state.selectedActor) s.destination++;
+            else if(s.destination == state.selectedActor + 1) s.destination--;
+        }
+        
+        state.selectedActor++;
+        actorWin->adjustMarginsForActor(state.selectedActor);
+        draw();
+        
+    }
+    
+    void moveActorLeft() {
+        if(state.selectedActor == 0) return;
+                
+        Actor first = doc.actors[state.selectedActor];
+        first.id--;
+        Actor second = doc.actors[state.selectedActor - 1];
+        second.id++;
+        doc.actors[state.selectedActor] = second;
+        doc.actors[state.selectedActor - 1] = first;
+        
+        for(auto& s : doc.signals) {
+            if(s.source == state.selectedActor) s.source--;
+            else if(s.source == state.selectedActor - 1) s.source++;
+            if(s.destination == state.selectedActor) s.destination--;
+            else if(s.destination == state.selectedActor - 1) s.destination++;
+        }
+        
+        state.selectedActor--;
+        actorWin->adjustMarginsForActor(state.selectedActor);
+        draw();
+        
+    }
+    
     
     //
     // MARK: Signals
@@ -480,9 +580,50 @@ private:
         draw();
     }
     
+    void moveSignalUp() {
+        if(state.selectedSignal == 0) return;
+            
+        Signal first = doc.signals[state.selectedSignal];
+        first.id--;
+        Signal second = doc.signals[state.selectedSignal - 1];
+        second.id++;
+        doc.signals[state.selectedSignal] = second;
+        doc.signals[state.selectedSignal - 1] = first;
+        
+        state.selectedSignal--;
+        signalWin->adjustMarginsForSignal(state.selectedSignal);
+        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].source);
+        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].destination);
+        draw();
+    }
+    
+    void moveSignalDown() {
+        if(state.selectedSignal == doc.signals.size() - 1) return;
+            
+        Signal first = doc.signals[state.selectedSignal];
+        first.id++;
+        Signal second = doc.signals[state.selectedSignal + 1];
+        second.id--;
+        doc.signals[state.selectedSignal] = second;
+        doc.signals[state.selectedSignal + 1] = first;
+        
+        state.selectedSignal++;
+        signalWin->adjustMarginsForSignal(state.selectedSignal);
+        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].source);
+        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].destination);
+        draw();
+    }
+    
     //
     // MARK: Drawing
     //
+    
+    void resetWindows() {
+        delete actorWin;
+        delete signalWin;
+        actorWin = new ActorWindow(&doc, &state);
+        signalWin = new SignalWindow(&doc, &state);
+    }
     
     void draw() {
         borderWin->draw();
@@ -539,6 +680,36 @@ public:
             case KEY_DOWN:
                 if(state.mode == Mode::Signals) nextSignal();
                 else panDown();
+                break;
+            case 'M':
+                if(state.mode == Mode::Signals)
+                    moveSignalUp();
+                else
+                    moveActorLeft();
+                break;
+            case 'm':
+                if(state.mode == Mode::Signals)
+                    moveSignalDown();
+                else
+                    moveActorRight();
+                break;
+            case 'N':
+                if(state.mode == Mode::Signals)
+                    break;
+                else
+                    addActorBefore();
+                break;
+            case 'n':
+                if(state.mode == Mode::Signals)
+                    break;
+                else
+                    addActorAfter();
+                break;
+            case'd':
+                if(state.mode == Mode::Signals)
+                    break;
+                else
+                    deleteActor();
                 break;
             default:
                 break;
