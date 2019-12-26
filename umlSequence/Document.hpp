@@ -73,7 +73,11 @@ const Document EXAMPLE_DOCUMENT {
     {
         {0, SignalType::Changing, "0 to 1", 0, 1},
         {1, SignalType::Informing, "1 to 2 tr", 1, 2},
-        {2, SignalType::Changing, "Something", 3, 1}
+        {2, SignalType::Changing, "Something", 3, 1},
+        {3, SignalType::Changing, "Else", 4, 6},
+        {4, SignalType::Changing, "ATM machine", 3, 5},
+        {5, SignalType::Informing, "Working", 5, 0},
+        {6, SignalType::Informing, "Inform", 2, 5}
     }
 };
 
