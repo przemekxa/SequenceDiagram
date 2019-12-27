@@ -12,18 +12,20 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
+#include <map>
 
 #include "json.hpp"
 #include "Document.hpp"
 #include "Controllers.hpp"
 #include "Views.hpp"
+#include "obiektowe/shared.hpp"
 
 using namespace std;
 
 
 // MARK: - Controller
 
-class UMLSequenceDiagram {
+class UMLSequenceDiagram: public Tool {
 private:
     
     WINDOW* docWin;
@@ -31,6 +33,8 @@ private:
     SignalsView* signalWin;
     BorderView* borderWin;
     StatusBarView* statusBar;
+    
+    map<string, string> entries;
     
     //
     // MARK: Mode changes
@@ -172,6 +176,8 @@ public:
         control = new DataController(&doc, &state);
         creator = new SignalCreator(&doc, &state, control);
         
+        
+        
         borderWin = new BorderView(&state);
         actorWin = new ActorsView(&doc, &state);
         signalWin = new SignalsView(&doc, &state);
@@ -180,8 +186,223 @@ public:
         draw();
     }
     
+    void init() {
+        setupBindings();
+        draw();
+    }
+    
     void redraw() {
         draw(false);
+    }
+    
+    //
+    // MARK: Entries
+    //
+    
+    void setEntry(string field, string value) {
+        entries[field] = value;
+    }
+    
+    string getEntry(string field) {
+        auto x = entries[field];
+        return entries[field];
+    }
+    
+    //
+    // MARK: Bindings
+    //
+    
+    void bindActors() {
+        if(state.mode == Mode::Signals) actorsMode();
+    }
+    
+    void bindSignals() {
+        if(state.mode == Mode::Actors) signalsMode();
+    }
+    
+    void bindLeft() {
+        if(state.mode == Mode::Actors ||
+           state.mode == Mode::NewSignalSource ||
+           state.mode == Mode::NewSignalDestination) previousActor();
+        else panLeft();
+    }
+    
+    void bindRight() {
+        if(state.mode == Mode::Actors ||
+           state.mode == Mode::NewSignalSource ||
+           state.mode == Mode::NewSignalDestination)  nextActor();
+        else panRight();
+    }
+    
+    void bindUp() {
+        if(state.mode == Mode::Signals) previousSignal();
+        else panUp();
+    }
+    
+    void bindDown() {
+        if(state.mode == Mode::Signals) nextSignal();
+        else panDown();
+    }
+    
+    void bindMoveUp() {
+        if(state.mode == Mode::Signals) {
+            if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
+                state.selectedSignal--;
+                draw();
+            }
+        }
+        else if(state.mode == Mode::Actors) {
+            if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
+                state.selectedActor--;
+                draw();
+            }
+        }
+    }
+    
+    void bindMoveDown() {
+        if(state.mode == Mode::Signals) {
+            if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
+                state.selectedSignal++;
+                draw();
+            }
+        }
+        else if(state.mode == Mode::Actors) {
+            if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
+                state.selectedActor++;
+                draw();
+            }
+        }
+    }
+    
+    void bindNewUp() {
+        switch(state.mode) {
+            case Mode::Actors:
+                control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                resetWindows();
+                draw();
+                break;
+            case Mode::Signals:
+                creator->begin(state.selectedSignal);
+                draw();
+                break;
+            default: break;
+        }
+    }
+    
+    void bindNewDown() {
+        switch(state.mode) {
+            case Mode::Actors:
+                if(!doc.actors.empty()) state.selectedActor++;
+                control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                resetWindows();
+                draw();
+                break;
+            case Mode::Signals:
+                if(!doc.signals.empty())
+                    creator->begin(state.selectedSignal + 1);
+                else
+                    creator->begin(state.selectedSignal);
+                draw();
+                break;
+            case Mode::NewSignalSource:
+                creator->next();
+                draw();
+                break;
+            case Mode::NewSignalDestination:
+                creator->end();
+                resetWindows();
+                draw();
+                break;
+            default: break;
+        }
+    }
+    
+    void bindChange() {
+        switch(state.mode) {
+            case Mode::Actors:
+                control->toggleActor(state.selectedActor);
+                draw();
+                break;
+            case Mode::Signals:
+                control->toggleSignal(state.selectedSignal);
+                draw();
+                break;
+            default: break;
+        }
+    }
+    
+    void bindDelete() {
+        if(state.mode == Mode::Signals) {
+            control->removeSignal(state.selectedSignal);
+            if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
+            if(doc.signals.empty()) state.selectedSignal = 0;
+            resetWindows();
+            draw();
+        }
+        else if(state.mode == Mode::Actors) {
+            control->removeActor(state.selectedActor);
+            if(doc.actors.size() == state.selectedActor) state.selectedActor--;
+            if(doc.actors.empty()) state.selectedActor = 0;
+            resetWindows();
+            draw();
+        }
+    }
+    
+    void bindCancel() {
+        if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
+            creator->cancel();
+            draw();
+        }
+    }
+    
+    
+    //
+    // MARK: Bindings setup
+    //
+    
+    void setupBindings() {
+        
+        // Actors mode
+        backend->bind("#nano#<CTRL>a%Actors", [&]() { bindActors(); }, "Actors mode");
+        
+        // Signals mode
+        backend->bind("#nano#<CTRL>s%Signals", [&]() { bindSignals(); }, "Actors mode");
+        
+        // Arrow Left
+        backend->bind("#nano#<LARROW>%Left", [&]() { bindLeft(); }, "Left arrow");
+        
+        // Arrow Right
+        backend->bind("#nano#<RARROW>%Right", [&]() { bindRight(); }, "Right arrow");
+        
+        // Arrow Up
+        backend->bind("#nano#<UARROW>%Up", [&]() { bindUp(); }, "Up arrow");
+        
+        // Arrow Down
+        backend->bind("#nano#<DARROW>%Down", [&]() { bindDown(); }, "Down arrow");
+        
+        // Move up
+        backend->bind("#nano#<CTRL>M%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
+        
+        // Move up
+        backend->bind("#nano#<CTRL>m%Move down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
+        
+        // New up
+        backend->bind("#nano#<CTRL><SHIFT>C%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+        
+        // New down
+        backend->bind("#nano#<CTRL>c%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+        
+        // Toggle type
+        backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindChange(); }, "Change Actor/Signal type");
+        
+        // Delete
+        backend->bind("#nano#<CTRL>x%Delete", [&]() { bindDelete(); }, "Delete Actor/Signal");
+        
+        // Cancel creating signal
+        backend->bind("#nano#<CTRL>b%Cancel", [&]() { bindCancel(); }, "Cancel creating signal");
+        
+        
+        
     }
     
     

@@ -7,29 +7,48 @@
 //
 
 #include "UMLSequenceDiagram.hpp"
+#include "backend-nano/nano.hpp"
 
 using namespace std;
 using nlohmann::json;
 
-
 int main() {
     
-    int key;
+    cout << "OK\n";
+    Nano nano;
+    nano.scr();
     
-    initscr();
-    keypad(stdscr, TRUE);
-    cbreak();
-    noecho();
+    UMLSequenceDiagram diagram;
     
-    UMLSequenceDiagram c;
-        
-    while(1) {
-        key = getch();
-        c.handleKey(key);
-    }
-    endwin();
+
+    nano.tool = &diagram;
+    diagram.backend = &nano;
+
+    diagram.init();
+    nano.start();
+    
     return 0;
 }
+
+
+//int main() {
+//
+//    int key;
+//
+//    initscr();
+//    keypad(stdscr, TRUE);
+//    cbreak();
+//    noecho();
+//
+//    UMLSequenceDiagram c;
+//
+//    while(1) {
+//        key = getch();
+//        c.handleKey(key);
+//    }
+//    endwin();
+//    return 0;
+//}
 
 
 //int main() {
