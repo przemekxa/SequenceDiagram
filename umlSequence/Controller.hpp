@@ -11,360 +11,15 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <curses.h>
-#include <form.h>
 #include <vector>
 #include <fstream>
 
 #include "json.hpp"
 #include "Document.hpp"
 #include "Controllers.hpp"
+#include "Views.hpp"
 
 using namespace std;
-
-const int ActorLength = 20;
-const int SignalLength = 4;
-
-void printSpaces(WINDOW* w, int posY, int posX, int len);
-
-void printCenter(WINDOW* w, const char * text, int posY, int posX, int len);
-
-
-// MARK: - Status bar
-
-class StatusBar {
-private:
-    WINDOW* w;
-    Document* doc;
-    DocumentState* state;
-public:
-    
-    StatusBar(Document* d, DocumentState* s) {
-        doc = d;
-        state = s;
-        
-        w = newwin(1, getmaxx(stdscr), getmaxy(stdscr) - 2, 0);
-        wstandout(w);
-    }
-    
-    ~StatusBar() {
-        delwin(w);
-    }
-    
-    void draw() {
-        wclear(w);
-        int width = getmaxx(stdscr);
-        printSpaces(w, 0, 0, width);
-        
-        wmove(w, 0, width - 15);
-        
-        if (state->mode == Mode::Actors) {
-            mvwprintw(w, 0, 1, doc->actors[state->selectedActor].name.c_str());
-            mvwprintw(w, 0, width - 15, "MODE: Actors");
-        } else {
-            Signal& s =doc->signals[state->selectedSignal];
-            string t = s.name;
-            t += " [" + doc->actors[s.source].name;
-            if(s.type == SignalType::Changing)
-                t += " => ";
-            else
-                t += " -> ";
-            t += doc->actors[s.destination].name + "]";
-            mvwprintw(w, 0, 1, t.c_str());
-            mvwprintw(w, 0, width - 15, "MODE: Signals");
-        }
-        wrefresh(w);
-    }
-};
-
-
-
-
-// MARK: - Border
-
-class BorderWindow {
-private:
-    WINDOW* w;
-    DocumentState* state;
-public:
-    
-    BorderWindow(DocumentState* s) {
-        state = s;
-        w = newwin(getmaxy(stdscr) - 3, getmaxx(stdscr), 1, 0);
-    }
-    
-    ~BorderWindow() {
-        delwin(w);
-    }
-    
-    void draw() {
-        wclear(w);
-        box(w, 0, 0);
-        mvwhline(w, 6, 1, '-', getmaxx(w) - 2);
-        
-        string name = state->documentName;
-        if(state->changed) name += "*";
-        
-        printCenter(w, name.c_str(), 0, 0, getmaxx(stdscr) - 2);
-        
-        wrefresh(w);
-    }
-};
-
-
-
-
-// MARK: - Actors
-
-class ActorWindow {
-private:
-    WINDOW *w;
-    Document* doc;
-    DocumentState* state;
-    
-    void refresh() {
-        prefresh(w, 0, 0 + state->marginH, 2, 1, 6, getmaxx(stdscr) - 2);
-    }
-    
-public:
-    
-    ActorWindow(Document* d, DocumentState* s) {
-        
-        doc = d;
-        state = s;
-        
-        w = newpad(5, doc->actors.size() * ActorLength);
-        //prefresh(w, 0 + state->marginH, 0, 2, 1, 6, getmaxx(stdscr) - 2);
-        draw();
-    }
-    
-    ~ActorWindow() {
-        delwin(w);
-    }
-    
-    void adjustMarginsForActor(int id) {
-        
-        // Margin when scrolling right
-        if((id + 1) * ActorLength - state->marginH > getmaxx(stdscr) - 2) {
-            
-            state->marginH =
-            ((id + 1) * ActorLength)
-            -
-            (getmaxx(stdscr) - 2);
-            
-        // Margin when scrolling left
-        } else if(state->marginH >= id * ActorLength) {
-            state->marginH = id * ActorLength;
-        }
-        
-    }
-    
-    void draw() {
-                
-        for(int i = 0; i < doc->actors.size(); i++) {
-            
-            if(i == state->selectedActor && state->mode == Mode::Actors) wattron(w, A_STANDOUT);
-            
-            printSpaces(w, 0, ActorLength * i, ActorLength);
-            printSpaces(w, 1, ActorLength * i, ActorLength);
-            printSpaces(w, 2, ActorLength * i, ActorLength);
-            printSpaces(w, 3, ActorLength * i, ActorLength);
-            printSpaces(w, 4, ActorLength * i, ActorLength);
-            
-            if(doc->actors[i].type == ActorType::Player) {
-                printCenter(w, "()", 0, ActorLength * i, ActorLength);
-                printCenter(w, "/\\", 1, ActorLength * i, ActorLength);
-                printCenter(w, "/\\", 2, ActorLength * i, ActorLength);
-            } else {
-                printCenter(w, "+----+", 0, ActorLength * i, ActorLength);
-                printCenter(w, "|    |", 1, ActorLength * i, ActorLength);
-                printCenter(w, "+----+", 2, ActorLength * i, ActorLength);
-            }
-            
-            printCenter(w, doc->actors[i].name.c_str(), 4, ActorLength * i, ActorLength);
-            
-            if(i == state->selectedActor && state->mode == Mode::Actors) wattroff(w, A_STANDOUT);
-            
-            
-        }
-        
-        refresh();
-        
-    }
-    
-    void draw(int focusOn, bool highlight) {
-                
-        for(int i = 0; i < doc->actors.size(); i++) {
-            
-            if(i == focusOn && highlight) wattron(w, A_STANDOUT);
-            
-            printSpaces(w, 0, ActorLength * i, ActorLength);
-            printSpaces(w, 1, ActorLength * i, ActorLength);
-            printSpaces(w, 2, ActorLength * i, ActorLength);
-            printSpaces(w, 3, ActorLength * i, ActorLength);
-            printSpaces(w, 4, ActorLength * i, ActorLength);
-            
-            if(doc->actors[i].type == ActorType::Player) {
-                printCenter(w, "()", 0, ActorLength * i, ActorLength);
-                printCenter(w, "/\\", 1, ActorLength * i, ActorLength);
-                printCenter(w, "/\\", 2, ActorLength * i, ActorLength);
-            } else {
-                printCenter(w, "+----+", 0, ActorLength * i, ActorLength);
-                printCenter(w, "|    |", 1, ActorLength * i, ActorLength);
-                printCenter(w, "+----+", 2, ActorLength * i, ActorLength);
-            }
-            
-            printCenter(w, doc->actors[i].name.c_str(), 4, ActorLength * i, ActorLength);
-            
-            if(i == focusOn && highlight) wattroff(w, A_STANDOUT);
-            
-            
-        }
-        
-        refresh();
-        
-    }
-    
-};
-
-
-
-
-// MARK: - Signals
-
-
-class SignalWindow {
-private:
-    WINDOW *w;
-    Document* doc;
-    DocumentState* state;
-    
-    void redrawActorLines() {
-            
-            // Thin lines
-            for(int i = 0; i < doc->actors.size(); i++) {
-                mvwvline(w, 0, ActorLength * i + (ActorLength / 2), '|', SignalLength * doc->signals.size());
-            }
-            
-            // Lifetime lines
-    //
-    //        bool* sigHas = new bool [doc->actors.size()] { false };
-    //        int* sigMin = new int [doc->actors.size()] { INT_MAX };
-    //        int* sigMax = new int [doc->actors.size()] { 0 };
-    //
-    //        for(auto const& s : doc->signals) {
-    //            sigHas[s.source] = true;
-    //            sigHas[s.destination] = true;
-    //            if(s.id < sigMin[s.source]) sigMin[s.source] = s.id;
-    //            if(s.id > sigMax[s.destination]) sigMax[s.destination] = s.id;
-    //        }
-    //
-    //
-    //        for(int i = 0; i < doc->actors.size(); i++) {
-    //            if(sigHas[i] && sigMin[i] != sigMax[i]) {
-    //                mvwvline(w, sigMin[i] * SignalLength + 2, ActorLength * i + (ActorLength / 2), 'X', sigMax[i] * SignalLength - 1);
-    //            }
-    //        }
-    //
-    //        delete [] sigHas;
-    //        delete [] sigMin;
-    //        delete [] sigMax;
-        }
-    
-public:
-    
-    SignalWindow(Document* d, DocumentState* s) {
-        
-        doc = d;
-        state = s;
-        
-        w = newpad(doc->signals.size() * SignalLength, doc->actors.size() * ActorLength);
-        
-        draw();
-    }
-    
-    void adjustMarginsForSignal(int id) {
-        
-        // Margin when scrolling down
-        if((id + 1) * SignalLength - state->marginV > getmaxy(stdscr) - 10) {
-            
-            state->marginV =
-            ((id + 1) * SignalLength)
-            -
-            (getmaxy(stdscr) - 10);
-            
-        // Margin when scrolling up
-        } else if(state->marginV >= id * SignalLength) {
-            state->marginV = id * SignalLength;
-        }
-        
-    }
-    
-    
-    void draw() {
-        
-        wclear(w);
-        redrawActorLines();
-        
-        int source, dest;
-        Signal* s;
-        
-        for(int i = 0; i < doc->signals.size(); i++) {
-            s = &doc->signals[i];
-            
-            if(i == state->selectedSignal && state->mode == Mode::Signals) wattron(w, A_STANDOUT);
-            
-            // Signal right
-            if(s->destination > s->source) {
-                source = (s->source * ActorLength) + (ActorLength / 2) + 1;
-                dest = (s->destination - s->source) * ActorLength - 1;
-                printSpaces(w, SignalLength * i + 1, source, dest);
-                printCenter(w, s->name.c_str(), SignalLength * i + 1, source, dest);
-                
-                switch(s->type) {
-                    case SignalType::Changing:
-                        mvwhline(w, SignalLength * i + 2, source, '=', dest);
-                        break;
-                    case SignalType::Informing:
-                    default:
-                        mvwhline(w, SignalLength * i + 2, source, '-', dest);
-                        break;
-                }
-                mvwaddch(w, SignalLength * i + 2, source + dest - 1, '>');
-            }
-            
-            // Signal left
-            else {
-                source = (s->destination * ActorLength) + (ActorLength / 2) + 1;
-                dest = (s->source - s->destination) * ActorLength - 1;
-                printSpaces(w, SignalLength * i + 1, source, dest);
-                printCenter(w, s->name.c_str(), SignalLength * i + 1, source, dest);
-                
-                switch(s->type) {
-                    case SignalType::Changing:
-                        mvwhline(w, SignalLength * i + 2, source, '=', dest);
-                        break;
-                    case SignalType::Informing:
-                    default:
-                        mvwhline(w, SignalLength * i + 2, source, '-', dest);
-                        break;
-                }
-                mvwaddch(w, SignalLength * i + 2, source, '<');
-            }
-            
-            if(i == state->selectedSignal && state->mode == Mode::Signals) wattroff(w, A_STANDOUT);
-            
-        }
-        
-        prefresh(w, 0 + state->marginV, 0 + state->marginH, 8, 1, getmaxy(stdscr) - 4, getmaxx(stdscr) - 2);
-        
-    }
-};
-
-
-
-
-
 
 
 // MARK: - Controller
@@ -373,10 +28,10 @@ class Controller {
 private:
     
     WINDOW* docWin;
-    ActorWindow* actorWin;
-    SignalWindow* signalWin;
-    BorderWindow* borderWin;
-    StatusBar* statusBar;
+    ActorsView* actorWin;
+    SignalsView* signalWin;
+    BorderView* borderWin;
+    StatusBarView* statusBar;
     
     //
     // MARK: Mode changes
@@ -421,11 +76,13 @@ private:
     //
     
     void nextActor() {
+        if(doc.actors.size() == 0) return;
         state.selectedActor = (state.selectedActor + 1) % doc.actors.size();
         draw();
     }
     
     void previousActor() {
+        if(doc.actors.size() == 0) return;
         if(state.selectedActor == 0) {
             state.selectedActor = doc.actors.size() - 1;
         } else {
@@ -436,16 +93,19 @@ private:
     }
     
     
+    
     //
     // MARK: Signals
     //
     
     void nextSignal() {
+        if(doc.signals.size() == 0) return;
         state.selectedSignal = (state.selectedSignal + 1) % doc.signals.size();
         draw();
     }
     
     void previousSignal() {
+        if(doc.signals.size() == 0) return;
         if(state.selectedSignal == 0) {
             state.selectedSignal = doc.signals.size() - 1;
         } else {
@@ -461,20 +121,33 @@ private:
     void resetWindows() {
         delete actorWin;
         delete signalWin;
-        actorWin = new ActorWindow(&doc, &state);
-        signalWin = new SignalWindow(&doc, &state);
+        actorWin = new ActorsView(&doc, &state);
+        signalWin = new SignalsView(&doc, &state);
     }
     
     void draw(bool adjustingMargins = true) {
         
         // Adjust margins
         if(adjustingMargins) {
-            if(state.mode == Mode::Actors) {
-                actorWin->adjustMarginsForActor(state.selectedActor);
-            } else {
-                signalWin->adjustMarginsForSignal(state.selectedSignal);
-                actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].source);
-                actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].destination);
+            
+            switch(state.mode) {
+                case Mode::Actors:
+                case Mode::NewSignalSource:
+                case Mode::NewSignalDestination:
+                    
+                    actorWin->adjustMarginsForActor(state.selectedActor);
+                    break;
+                    
+                case Mode::Signals:
+                default:
+                    
+                    signalWin->adjustMarginsForSignal(state.selectedSignal);
+                    if(!doc.signals.empty()) {
+                        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].source);
+                        actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].destination);
+                    }
+                    
+                    break;
             }
         }
         
@@ -488,24 +161,22 @@ private:
     
 public:
     
-    // Document, state and data controller
+    // Document, state, data controller, signal creator
     Document doc;
     DocumentState state;
     DataController* control;
-    
-    // Scrolling margin
-    int marginH;
-    int marginV;
+    SignalCreator* creator;
     
     Controller() {
         doc = EXAMPLE_DOCUMENT;
-        state = {Mode::Actors, "example.json", true, 0, 0, 0, 0};
+        state = {Mode::Actors, "example.json", true};
         control = new DataController(&doc, &state);
+        creator = new SignalCreator(&doc, &state, control);
         
-        borderWin = new BorderWindow(&state);
-        actorWin = new ActorWindow(&doc, &state);
-        signalWin = new SignalWindow(&doc, &state);
-        statusBar = new StatusBar(&doc, &state);
+        borderWin = new BorderView(&state);
+        actorWin = new ActorsView(&doc, &state);
+        signalWin = new SignalsView(&doc, &state);
+        statusBar = new StatusBarView(&doc, &state);
         
         draw();
     }
@@ -515,17 +186,21 @@ public:
         borderWin->draw();
         switch (key) {
             case 'a':
-                actorsMode();
+                if(state.mode == Mode::Signals) actorsMode();
                 break;
             case 's':
-                signalsMode();
+                if(state.mode == Mode::Actors) signalsMode();
                 break;
             case KEY_LEFT:
-                if(state.mode == Mode::Actors) previousActor();
+                if(state.mode == Mode::Actors ||
+                   state.mode == Mode::NewSignalSource ||
+                   state.mode == Mode::NewSignalDestination) previousActor();
                 else panLeft();
                 break;
             case KEY_RIGHT:
-                if(state.mode == Mode::Actors) nextActor();
+                if(state.mode == Mode::Actors ||
+                   state.mode == Mode::NewSignalSource ||
+                   state.mode == Mode::NewSignalDestination)  nextActor();
                 else panRight();
                 break;
             case KEY_UP:
@@ -543,7 +218,7 @@ public:
                         draw();
                     }
                 }
-                else {
+                else if(state.mode == Mode::Actors) {
                     if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
                         state.selectedActor--;
                         draw();
@@ -557,7 +232,7 @@ public:
                         draw();
                     }
                 }
-                else {
+                else if(state.mode == Mode::Actors) {
                     if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
                         state.selectedActor++;
                         draw();
@@ -565,43 +240,80 @@ public:
                 }
                 break;
             case 'N':
-                if(state.mode == Mode::Signals) {
-                    control->addSignal(state.selectedSignal, 0, 1, SignalType::Informing, "Unnamed");
-                    resetWindows();
-                    draw();
-                }
-                else {
-                    control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
-                    resetWindows();
-                    draw();
+                switch(state.mode) {
+                    case Mode::Actors:
+                        control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                        resetWindows();
+                        draw();
+                        break;
+                    case Mode::Signals:
+                        creator->begin(state.selectedSignal);
+                        draw();
+                        break;
+                    default: break;
                 }
                 break;
             case 'n':
-                if(state.mode == Mode::Signals) {
-                    control->addSignal(++state.selectedSignal, 0, 1, SignalType::Informing, "Unnamed");
-                    resetWindows();
-                    draw();
-                }
-                else {
-                    control->addActor(++state.selectedActor, ActorType::Object, "UNNAMED");
-                    resetWindows();
-                    draw();
+                switch(state.mode) {
+                    case Mode::Actors:
+                        if(!doc.actors.empty()) state.selectedActor++;
+                        control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                        resetWindows();
+                        draw();
+                        break;
+                    case Mode::Signals:
+                        if(!doc.signals.empty())
+                            creator->begin(state.selectedSignal + 1);
+                        else
+                            creator->begin(state.selectedSignal);
+                        draw();
+                        break;
+                    case Mode::NewSignalSource:
+                        creator->next();
+                        draw();
+                        break;
+                    case Mode::NewSignalDestination:
+                        creator->end();
+                        resetWindows();
+                        draw();
+                        break;
+                    default: break;
                 }
                 break;
-            case'x':
+            case 'c':
+                switch(state.mode) {
+                    case Mode::Actors:
+                        control->toggleActor(state.selectedActor);
+                        draw();
+                        break;
+                    case Mode::Signals:
+                        control->toggleSignal(state.selectedSignal);
+                        draw();
+                        break;
+                    default: break;
+                }
+                break;
+            case 'x':
                 if(state.mode == Mode::Signals) {
                     control->removeSignal(state.selectedSignal);
                     if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
+                    if(doc.signals.empty()) state.selectedSignal = 0;
                     resetWindows();
                     draw();
                 }
-                else {
+                else if(state.mode == Mode::Actors) {
                     control->removeActor(state.selectedActor);
                     if(doc.actors.size() == state.selectedActor) state.selectedActor--;
+                    if(doc.actors.empty()) state.selectedActor = 0;
                     resetWindows();
                     draw();
                 }
                 break;
+            case 'q':
+                if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
+                    creator->cancel();
+                    draw();
+                }
             default:
                 break;
         }

@@ -85,6 +85,18 @@ public:
         return true;
     }
     
+    /// Change Actor type (Player/Object)
+    /// @param pos Position of Actor to be changed
+    void toggleActor(unsigned int pos) {
+        if(d->actors.empty()) return;
+        
+        Actor& a = d->actors[pos];
+        if(a.type == ActorType::Player)
+            a.type = ActorType::Object;
+        else
+            a.type = ActorType::Player;
+    }
+    
     
     
     // MARK: Signals
@@ -116,6 +128,84 @@ public:
         return true;
     }
     
+    
+    /// Change Signal type (Informing/Changing)
+    /// @param pos Position of Signal to be changed
+    void toggleSignal(unsigned int pos) {
+        if(d->signals.empty()) return;
+        
+        Signal& i = d->signals[pos];
+        if(i.type == SignalType::Informing)
+            i.type = SignalType::Changing;
+        else
+            i.type = SignalType::Informing;
+    }
+    
+    
+};
+
+
+class SignalCreator {
+private:
+    Document* d;
+    DocumentState* s;
+    DataController* c;
+    
+    unsigned int newSignalPosition = 0;
+    unsigned int newSignalSource = 0;
+    unsigned int savedSelectedSignal = 0;
+    unsigned int savedSelectedActor = 0;
+    
+public:
+    SignalCreator(Document* document, DocumentState* state, DataController* control) {
+        d = document;
+        s = state;
+        c = control;
+    }
+    
+    /// Begin creating new Signal
+    /// @param pos Position to put the new Signal
+    void begin(unsigned int pos) {
+        if(d->actors.empty() || s->mode != Mode::Signals) return;
+        
+        // Save position to put new Signal
+        newSignalPosition = pos;
+        
+        // Save current state
+        savedSelectedActor = s->selectedActor;
+        savedSelectedSignal = s->selectedSignal;
+        
+        // Set new mode
+        s->mode = Mode::NewSignalSource;
+        
+        // Set new selected actor - for choosing
+        s->selectedActor = min(d->signals[s->selectedSignal].source, d->signals[s->selectedSignal].destination);
+    }
+    
+    /// Save source and continue with destination
+    void next() {
+        s->mode = Mode::NewSignalDestination;
+        newSignalSource = s->selectedActor;
+    }
+    
+    /// Finish creating new Signal
+    void end() {
+        
+        c->addSignal(newSignalPosition, newSignalSource, s->selectedActor, SignalType::Informing, "CREATOR");
+        s->mode = Mode::Signals;
+        s->selectedActor = savedSelectedActor;
+        s->selectedSignal = newSignalPosition;
+    }
+    
+    /// Cancel creating new Signal
+    void cancel() {
+        if(s->mode == Mode::NewSignalSource || s->mode == Mode::NewSignalDestination) {
+            // Restore prevoius state
+            s->mode = Mode::Signals;
+            s->selectedActor = savedSelectedActor;
+            s->selectedSignal = savedSelectedSignal;
+        }
+    }
     
 };
 

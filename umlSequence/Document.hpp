@@ -57,19 +57,22 @@ void to_json(json& j, const Document& d);
 void from_json(const json& j, Document& d);
 
 
+
 enum class Mode {
     Actors,
-    Signals
+    Signals,
+    NewSignalSource,
+    NewSignalDestination
 };
 
 struct DocumentState {
     Mode mode;
     string documentName;
-    bool changed;
-    unsigned int selectedActor;
-    unsigned int selectedSignal;
-    int marginH;
-    int marginV;
+    bool changed = false;
+    unsigned int selectedActor = 0;
+    unsigned int selectedSignal = 0;
+    int marginH = 0;
+    int marginV = 0;
 };
 
 
@@ -85,6 +88,7 @@ const Document EXAMPLE_DOCUMENT {
     },
     {
         {SignalType::Changing, "0 to 1", 0, 1},
+        {SignalType::Informing, "Loop", 1, 1},
         {SignalType::Informing, "1 to 2 tr", 1, 2},
         {SignalType::Changing, "Something", 3, 1},
         {SignalType::Changing, "Else", 4, 6},
