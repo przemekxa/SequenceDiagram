@@ -24,7 +24,6 @@ enum class ActorType {
 };
 
 struct Actor {
-    unsigned int id;
     ActorType type;
     string name;
 };
@@ -39,7 +38,6 @@ enum class SignalType {
 };
 
 struct Signal {
-    unsigned int id;
     SignalType type;
     string name;
     unsigned int source;
@@ -59,25 +57,40 @@ void to_json(json& j, const Document& d);
 void from_json(const json& j, Document& d);
 
 
+enum class Mode {
+    Actors,
+    Signals
+};
+
+struct DocumentState {
+    Mode mode;
+    string documentName;
+    bool changed;
+    unsigned int selectedActor;
+    unsigned int selectedSignal;
+    int marginH;
+    int marginV;
+};
+
 
 const Document EXAMPLE_DOCUMENT {
     {
-        {0, ActorType::Player, "First"},
-        {1, ActorType::Object, "Second"},
-        {2, ActorType::Object, "Third"},
-        {3, ActorType::Player, "Fourth"},
-        {4, ActorType::Object, "Fifth"},
-        {5, ActorType::Object, "Sixth"},
-        {6, ActorType::Object, "Seventh"}
+        {ActorType::Player, "First"},
+        {ActorType::Object, "Second"},
+        {ActorType::Object, "Third"},
+        {ActorType::Player, "Fourth"},
+        {ActorType::Object, "Fifth"},
+        {ActorType::Object, "Sixth"},
+        {ActorType::Object, "Seventh"}
     },
     {
-        {0, SignalType::Changing, "0 to 1", 0, 1},
-        {1, SignalType::Informing, "1 to 2 tr", 1, 2},
-        {2, SignalType::Changing, "Something", 3, 1},
-        {3, SignalType::Changing, "Else", 4, 6},
-        {4, SignalType::Changing, "ATM machine", 3, 5},
-        {5, SignalType::Informing, "Working", 5, 0},
-        {6, SignalType::Informing, "Inform", 2, 5}
+        {SignalType::Changing, "0 to 1", 0, 1},
+        {SignalType::Informing, "1 to 2 tr", 1, 2},
+        {SignalType::Changing, "Something", 3, 1},
+        {SignalType::Changing, "Else", 4, 6},
+        {SignalType::Changing, "ATM machine", 3, 5},
+        {SignalType::Informing, "Working", 5, 0},
+        {SignalType::Informing, "Inform", 2, 5}
     }
 };
 
