@@ -9,7 +9,6 @@
 #ifndef Document_hpp
 #define Document_hpp
 
-#include <stdio.h>
 #include <string>
 #include <vector>
 #include "json.hpp"

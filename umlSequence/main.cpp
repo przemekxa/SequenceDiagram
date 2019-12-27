@@ -6,7 +6,7 @@
 //  Copyright © 2019 Przemek Ambroży. All rights reserved.
 //
 
-#include "Controller.hpp"
+#include "UMLSequenceDiagram.hpp"
 
 using namespace std;
 using nlohmann::json;
@@ -21,7 +21,7 @@ int main() {
     cbreak();
     noecho();
     
-    Controller c;
+    UMLSequenceDiagram c;
         
     while(1) {
         key = getch();

@@ -6,6 +6,6 @@
 //  Copyright © 2019 Przemek Ambroży. All rights reserved.
 //
 
-#include "Controller.hpp"
+#include "UMLSequenceDiagram.hpp"
 
 

@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <stdlib.h>
-#include <vector>
 #include <fstream>
 
 #include "json.hpp"
@@ -24,7 +23,7 @@ using namespace std;
 
 // MARK: - Controller
 
-class Controller {
+class UMLSequenceDiagram {
 private:
     
     WINDOW* docWin;
@@ -84,7 +83,7 @@ private:
     void previousActor() {
         if(doc.actors.size() == 0) return;
         if(state.selectedActor == 0) {
-            state.selectedActor = doc.actors.size() - 1;
+            state.selectedActor = (unsigned int)doc.actors.size() - 1;
         } else {
             state.selectedActor--;
         }
@@ -107,7 +106,7 @@ private:
     void previousSignal() {
         if(doc.signals.size() == 0) return;
         if(state.selectedSignal == 0) {
-            state.selectedSignal = doc.signals.size() - 1;
+            state.selectedSignal = (unsigned int)doc.signals.size() - 1;
         } else {
             state.selectedSignal--;
         }
@@ -167,7 +166,7 @@ public:
     DataController* control;
     SignalCreator* creator;
     
-    Controller() {
+    UMLSequenceDiagram() {
         doc = EXAMPLE_DOCUMENT;
         state = {Mode::Actors, "example.json", true};
         control = new DataController(&doc, &state);
@@ -179,6 +178,10 @@ public:
         statusBar = new StatusBarView(&doc, &state);
         
         draw();
+    }
+    
+    void redraw() {
+        draw(false);
     }
     
     
@@ -317,13 +320,8 @@ public:
             default:
                 break;
         }
-        actorWin->draw();
-        signalWin->draw();
-        statusBar->draw();
     }
     
 };
 
 #endif /* Controller_hpp */
-
-// 650

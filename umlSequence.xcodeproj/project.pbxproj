@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		019068B723B165A30093536C /* Controller.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 019068B523B165A30093536C /* Controller.cpp */; };
 		01D59B6723B6040D00107258 /* Controllers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6523B6040D00107258 /* Controllers.cpp */; };
 		01D59B6A23B65F0C00107258 /* Views.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6823B65F0C00107258 /* Views.cpp */; };
+		01D59B6D23B6633E00107258 /* UMLSequenceDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */; };
 		01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01E08EE723A7F7780091F4D9 /* Document.cpp */; };
 		01F0B33B23A4452B006072B6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01F0B33A23A4452B006072B6 /* main.cpp */; };
 		01F0B34323A445C6006072B6 /* libncurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F0B34223A445AA006072B6 /* libncurses.tbd */; };
@@ -29,12 +29,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		019068B523B165A30093536C /* Controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Controller.cpp; sourceTree = "<group>"; };
-		019068B623B165A30093536C /* Controller.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Controller.hpp; sourceTree = "<group>"; };
 		01D59B6523B6040D00107258 /* Controllers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Controllers.cpp; sourceTree = "<group>"; };
 		01D59B6623B6040D00107258 /* Controllers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Controllers.hpp; sourceTree = "<group>"; };
 		01D59B6823B65F0C00107258 /* Views.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Views.cpp; sourceTree = "<group>"; };
 		01D59B6923B65F0C00107258 /* Views.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Views.hpp; sourceTree = "<group>"; };
+		01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UMLSequenceDiagram.cpp; sourceTree = "<group>"; };
+		01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UMLSequenceDiagram.hpp; sourceTree = "<group>"; };
 		01E08EE723A7F7780091F4D9 /* Document.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Document.cpp; sourceTree = "<group>"; };
 		01E08EE823A7F7780091F4D9 /* Document.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Document.hpp; sourceTree = "<group>"; };
 		01E08EEA23A7FA180091F4D9 /* json.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
@@ -84,8 +84,8 @@
 				01D59B6923B65F0C00107258 /* Views.hpp */,
 				01D59B6523B6040D00107258 /* Controllers.cpp */,
 				01D59B6623B6040D00107258 /* Controllers.hpp */,
-				019068B523B165A30093536C /* Controller.cpp */,
-				019068B623B165A30093536C /* Controller.hpp */,
+				01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */,
+				01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */,
 				01E08EEA23A7FA180091F4D9 /* json.hpp */,
 			);
 			path = umlSequence;
@@ -157,9 +157,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01D59B6D23B6633E00107258 /* UMLSequenceDiagram.cpp in Sources */,
 				01D59B6A23B65F0C00107258 /* Views.cpp in Sources */,
 				01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */,
-				019068B723B165A30093536C /* Controller.cpp in Sources */,
 				01F0B33B23A4452B006072B6 /* main.cpp in Sources */,
 				01D59B6723B6040D00107258 /* Controllers.cpp in Sources */,
 			);
