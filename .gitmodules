@@ -1,0 +1,6 @@
+[submodule "umlSequence/backend-nano"]
+	path = umlSequence/backend-nano
+	url = https://github.com/mprzypasniak99/backend-nano.git
+[submodule "umlSequence/obiektowe"]
+	path = umlSequence/obiektowe
+	url = https://github.com/przemekxa/obiektowe.git
