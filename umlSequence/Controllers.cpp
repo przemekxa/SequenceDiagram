@@ -114,6 +114,11 @@ void DataController::toggleSignal(unsigned int pos) {
 }
 
 
+void DataController::save(string filename) {
+    ofstream file(filename);
+    file << json(*d).dump(4) << endl;
+    file.close();
+}
 
 
 

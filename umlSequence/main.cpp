@@ -14,12 +14,8 @@ using nlohmann::json;
 
 int main() {
     
-    cout << "OK\n";
     Nano nano;
-    nano.scr();
-    
     UMLSequenceDiagram diagram;
-    
 
     nano.tool = &diagram;
     diagram.backend = &nano;

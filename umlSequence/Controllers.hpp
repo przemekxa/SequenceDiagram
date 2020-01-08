@@ -10,6 +10,7 @@
 #define Controllers_hpp
 
 #include "Document.hpp"
+#include <fstream>
 
 using namespace std;
 
@@ -68,6 +69,12 @@ public:
     /// Change Signal type (Informing/Changing)
     /// @param pos Position of Signal to be changed
     void toggleSignal(unsigned int pos);
+    
+    
+    
+    // MARK: File I/O
+    
+    void save(string filename);
     
     
 };

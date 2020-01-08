@@ -204,7 +204,6 @@ public:
     }
     
     string getEntry(string field) {
-        auto x = entries[field];
         return entries[field];
     }
     
@@ -213,14 +212,20 @@ public:
     //
     
     void bindActors() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>a");
         if(state.mode == Mode::Signals) actorsMode();
     }
     
     void bindSignals() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>s");
         if(state.mode == Mode::Actors) signalsMode();
     }
     
     void bindLeft() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<LARROW>");
         if(state.mode == Mode::Actors ||
            state.mode == Mode::NewSignalSource ||
            state.mode == Mode::NewSignalDestination) previousActor();
@@ -228,6 +233,8 @@ public:
     }
     
     void bindRight() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<RARROW>");
         if(state.mode == Mode::Actors ||
            state.mode == Mode::NewSignalSource ||
            state.mode == Mode::NewSignalDestination)  nextActor();
@@ -235,16 +242,24 @@ public:
     }
     
     void bindUp() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<UP>");
         if(state.mode == Mode::Signals) previousSignal();
         else panUp();
     }
     
     void bindDown() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<DOWN>");
         if(state.mode == Mode::Signals) nextSignal();
         else panDown();
     }
     
     void bindMoveUp() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>m");
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>a");
         if(state.mode == Mode::Signals) {
             if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
                 state.selectedSignal--;
@@ -260,6 +275,8 @@ public:
     }
     
     void bindMoveDown() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>M");
         if(state.mode == Mode::Signals) {
             if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
                 state.selectedSignal++;
@@ -275,6 +292,8 @@ public:
     }
     
     void bindNewUp() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>n");
         switch(state.mode) {
             case Mode::Actors:
                 control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
@@ -290,6 +309,8 @@ public:
     }
     
     void bindNewDown() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>N");
         switch(state.mode) {
             case Mode::Actors:
                 if(!doc.actors.empty()) state.selectedActor++;
@@ -318,6 +339,8 @@ public:
     }
     
     void bindChange() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>t");
         switch(state.mode) {
             case Mode::Actors:
                 control->toggleActor(state.selectedActor);
@@ -332,6 +355,8 @@ public:
     }
     
     void bindDelete() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>x");
         if(state.mode == Mode::Signals) {
             control->removeSignal(state.selectedSignal);
             if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
@@ -349,10 +374,18 @@ public:
     }
     
     void bindCancel() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>b");
         if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
             creator->cancel();
             draw();
         }
+    }
+    
+    void bindSave() {
+        mvaddstr(0, 0, "          ");
+        mvaddstr(0, 0, "<CTRL>a");
+        control->save(entries["FILENAME"]);
     }
     
     
@@ -383,7 +416,7 @@ public:
         // Move up
         backend->bind("#nano#<CTRL>M%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
         
-        // Move up
+        // Move down
         backend->bind("#nano#<CTRL>m%Move down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
         
         // New up
@@ -396,10 +429,13 @@ public:
         backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindChange(); }, "Change Actor/Signal type");
         
         // Delete
-        backend->bind("#nano#<CTRL>x%Delete", [&]() { bindDelete(); }, "Delete Actor/Signal");
+        backend->bind("#nano#<CTRL>x%Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
         
         // Cancel creating signal
         backend->bind("#nano#<CTRL>b%Cancel", [&]() { bindCancel(); }, "Cancel creating signal");
+        
+        // Save a file
+        backend->bind("#nano#<CTRL>f%Save!Filename${FILENAME}", [&]() { bindSave(); }, "Save data to a file");
         
         
         
