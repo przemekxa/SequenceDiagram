@@ -4,3 +4,6 @@
 [submodule "umlSequence/obiektowe"]
 	path = umlSequence/obiektowe
 	url = https://github.com/przemekxa/obiektowe.git
+[submodule "umlSequence/backend-nice"]
+	path = umlSequence/backend-nice
+	url = https://github.com/Borrubasz/nice-like.git

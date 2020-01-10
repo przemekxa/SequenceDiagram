@@ -77,23 +77,24 @@ struct DocumentState {
 
 const Document EXAMPLE_DOCUMENT {
     {
-        {ActorType::Player, "First"},
-        {ActorType::Object, "Second"},
-        {ActorType::Object, "Third"},
-        {ActorType::Player, "Fourth"},
-        {ActorType::Object, "Fifth"},
-        {ActorType::Object, "Sixth"},
-        {ActorType::Object, "Seventh"}
+        {ActorType::Player, "User"},
+        {ActorType::Object, "ATM Machine"},
+        {ActorType::Object, "Bank Server"}
     },
     {
-        {SignalType::Changing, "0 to 1", 0, 1},
-        {SignalType::Informing, "Loop", 1, 1},
-        {SignalType::Informing, "1 to 2 tr", 1, 2},
-        {SignalType::Changing, "Something", 3, 1},
-        {SignalType::Changing, "Else", 4, 6},
-        {SignalType::Changing, "ATM machine", 3, 5},
-        {SignalType::Informing, "Working", 5, 0},
-        {SignalType::Informing, "Inform", 2, 5}
+        {SignalType::Changing, "Insert card", 0, 1},
+        {SignalType::Informing, "Request PIN", 1, 0},
+        {SignalType::Changing, "Insert PIN", 0, 1},
+        {SignalType::Changing, "Verify PIN", 1, 2},
+        {SignalType::Informing, "PIN Verified", 2, 1},
+        {SignalType::Informing, "Show options", 1, 0},
+        {SignalType::Changing, "Choose option", 0, 1},
+        {SignalType::Changing, "Get balance", 1, 2},
+        {SignalType::Informing, "Balance", 2, 1},
+        {SignalType::Informing, "Show balance", 1, 0},
+        {SignalType::Informing, "Print receipt", 1, 0},
+        {SignalType::Changing, "Card removed", 0, 1},
+        {SignalType::Informing, "\"Thank You\"", 1, 0},
     }
 };
 

@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0112407023B67E20000D5876 /* nano.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0112406A23B67E1F000D5876 /* nano.cpp */; };
 		01D59B6723B6040D00107258 /* Controllers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6523B6040D00107258 /* Controllers.cpp */; };
 		01D59B6A23B65F0C00107258 /* Views.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6823B65F0C00107258 /* Views.cpp */; };
 		01D59B6D23B6633E00107258 /* UMLSequenceDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */; };
 		01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01E08EE723A7F7780091F4D9 /* Document.cpp */; };
+		01E3934623C8F28100B7908C /* nice-like.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01E3934223C8F25800B7908C /* nice-like.cpp */; };
 		01F0B33B23A4452B006072B6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01F0B33A23A4452B006072B6 /* main.cpp */; };
 		01F0B34323A445C6006072B6 /* libncurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F0B34223A445AA006072B6 /* libncurses.tbd */; };
 		01F0B34523A45ADE006072B6 /* libform.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 01F0B34423A45AD4006072B6 /* libform.tbd */; };
@@ -29,15 +31,27 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0112406923B67E1F000D5876 /* shared.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared.hpp; sourceTree = "<group>"; };
+		0112406A23B67E1F000D5876 /* nano.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = nano.cpp; sourceTree = "<group>"; };
+		0112406B23B67E1F000D5876 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		0112406C23B67E1F000D5876 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		0112406E23B67E1F000D5876 /* nano.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nano.hpp; sourceTree = "<group>"; };
 		01D59B6523B6040D00107258 /* Controllers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Controllers.cpp; sourceTree = "<group>"; };
 		01D59B6623B6040D00107258 /* Controllers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Controllers.hpp; sourceTree = "<group>"; };
 		01D59B6823B65F0C00107258 /* Views.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Views.cpp; sourceTree = "<group>"; };
 		01D59B6923B65F0C00107258 /* Views.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Views.hpp; sourceTree = "<group>"; };
 		01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UMLSequenceDiagram.cpp; sourceTree = "<group>"; };
 		01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UMLSequenceDiagram.hpp; sourceTree = "<group>"; };
+		01D59B7E23B6704000107258 /* shared.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared.hpp; sourceTree = "<group>"; };
+		01D59B7F23B6704000107258 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		01E08EE723A7F7780091F4D9 /* Document.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Document.cpp; sourceTree = "<group>"; };
 		01E08EE823A7F7780091F4D9 /* Document.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Document.hpp; sourceTree = "<group>"; };
 		01E08EEA23A7FA180091F4D9 /* json.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
+		01E3934123C8F25800B7908C /* shared.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = shared.hpp; sourceTree = "<group>"; };
+		01E3934223C8F25800B7908C /* nice-like.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "nice-like.cpp"; sourceTree = "<group>"; };
+		01E3934323C8F25800B7908C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		01E3934423C8F25800B7908C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		01E3934523C8F25800B7908C /* nice-like.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "nice-like.hpp"; sourceTree = "<group>"; };
 		01F0B33723A4452B006072B6 /* umlSequence */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = umlSequence; sourceTree = BUILT_PRODUCTS_DIR; };
 		01F0B33A23A4452B006072B6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		01F0B34223A445AA006072B6 /* libncurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.tbd; path = usr/lib/libncurses.tbd; sourceTree = SDKROOT; };
@@ -57,6 +71,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0112406823B67E1F000D5876 /* backend-nano */ = {
+			isa = PBXGroup;
+			children = (
+				0112406923B67E1F000D5876 /* shared.hpp */,
+				0112406A23B67E1F000D5876 /* nano.cpp */,
+				0112406B23B67E1F000D5876 /* README.md */,
+				0112406C23B67E1F000D5876 /* .gitignore */,
+				0112406E23B67E1F000D5876 /* nano.hpp */,
+			);
+			path = "backend-nano";
+			sourceTree = "<group>";
+		};
+		01D59B7D23B6704000107258 /* obiektowe */ = {
+			isa = PBXGroup;
+			children = (
+				01D59B7E23B6704000107258 /* shared.hpp */,
+				01D59B7F23B6704000107258 /* README.md */,
+			);
+			path = obiektowe;
+			sourceTree = "<group>";
+		};
+		01E3934023C8F25800B7908C /* backend-nice */ = {
+			isa = PBXGroup;
+			children = (
+				01E3934123C8F25800B7908C /* shared.hpp */,
+				01E3934223C8F25800B7908C /* nice-like.cpp */,
+				01E3934323C8F25800B7908C /* README.md */,
+				01E3934423C8F25800B7908C /* .gitignore */,
+				01E3934523C8F25800B7908C /* nice-like.hpp */,
+			);
+			path = "backend-nice";
+			sourceTree = "<group>";
+		};
 		01F0B32E23A4452B006072B6 = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +124,7 @@
 		01F0B33923A4452B006072B6 /* umlSequence */ = {
 			isa = PBXGroup;
 			children = (
+				01D59B7D23B6704000107258 /* obiektowe */,
 				01F0B33A23A4452B006072B6 /* main.cpp */,
 				01E08EE723A7F7780091F4D9 /* Document.cpp */,
 				01E08EE823A7F7780091F4D9 /* Document.hpp */,
@@ -86,6 +134,8 @@
 				01D59B6623B6040D00107258 /* Controllers.hpp */,
 				01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */,
 				01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */,
+				0112406823B67E1F000D5876 /* backend-nano */,
+				01E3934023C8F25800B7908C /* backend-nice */,
 				01E08EEA23A7FA180091F4D9 /* json.hpp */,
 			);
 			path = umlSequence;
@@ -161,7 +211,9 @@
 				01D59B6A23B65F0C00107258 /* Views.cpp in Sources */,
 				01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */,
 				01F0B33B23A4452B006072B6 /* main.cpp in Sources */,
+				01E3934623C8F28100B7908C /* nice-like.cpp in Sources */,
 				01D59B6723B6040D00107258 /* Controllers.cpp in Sources */,
+				0112407023B67E20000D5876 /* nano.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +332,7 @@
 		01F0B33F23A4452B006072B6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_NO_COMMON_BLOCKS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -289,6 +342,7 @@
 		01F0B34023A4452B006072B6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_NO_COMMON_BLOCKS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";

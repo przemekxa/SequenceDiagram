@@ -438,6 +438,7 @@ public:
         backend->bind("#nano#<CTRL>f%Save!Filename${FILENAME}", [&]() { bindSave(); }, "Save data to a file");
         
         
+        backend->bind(".Mode.Actors", [&]() { bindActors(); }, "Actors mode");
         
     }
     

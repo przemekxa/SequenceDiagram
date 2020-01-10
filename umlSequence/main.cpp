@@ -8,20 +8,59 @@
 
 #include "UMLSequenceDiagram.hpp"
 #include "backend-nano/nano.hpp"
+#include "backend-nice/nice-like.hpp"
 
 using namespace std;
 using nlohmann::json;
 
-int main() {
+int main(int argc, char* argv[]) {
     
-    Nano nano;
-    UMLSequenceDiagram diagram;
+    if(argc < 2) {
+        cout << "Choose backend by running with option:\n\n";
+        cout << "./" << argv[0] << " i - Nice\n";
+        cout << "./" << argv[0] << " a - Nano\n";
+        cout << "./" << argv[0] << " v - Vim\n";
+        cout << "./" << argv[0] << " m - Mcedit\n";
+        return 0;
+    }
 
-    nano.tool = &diagram;
-    diagram.backend = &nano;
 
-    diagram.init();
-    nano.start();
+    Backend* b;
+
+    switch(argv[1][0]) {
+        case 'i':
+            b = new nice();
+            break;
+        case 'a':
+            b = new Nano();
+            break;
+        case 'v':
+            //b = new Vim;
+            break;
+        case 'm':
+            //b = new Mcedit;
+            break;
+    }
+    
+    UMLSequenceDiagram t;
+    
+    b->tool = &t;
+    t.backend = b;
+    
+    t.init();
+    b->start();
+    
+    delete b;
+    
+    
+//    Nano b;
+//    UMLSequenceDiagram diagram;
+//
+//    b.tool = &diagram;
+//    diagram.backend = &b;
+//
+//    diagram.init();
+//    b.start();
     
     return 0;
 }
