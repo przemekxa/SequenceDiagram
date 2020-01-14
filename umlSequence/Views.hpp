@@ -31,6 +31,7 @@ public:
     StatusBarView(Document* d, DocumentState* s);
     ~StatusBarView();
     
+    //void setStatus(string status);
     void draw();
 };
 

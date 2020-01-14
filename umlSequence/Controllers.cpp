@@ -27,6 +27,7 @@ void DataController::addActor(unsigned int pos, ActorType type, string name) {
     }
     
     d->actors.emplace(d->actors.begin() + pos, Actor { type, name });
+    s->changed = true;
 }
 
 /// Delete actor at position
@@ -49,6 +50,7 @@ void DataController::removeActor(unsigned int pos) {
     }
     
     d->actors.erase(d->actors.begin() + pos);
+    s->changed = true;
 }
 
 /// Move actor to new position
@@ -63,6 +65,7 @@ bool DataController::moveActor(unsigned int from, int to) {
         if(i.destination == from) i.destination = to;
         else if(i.destination == to) i.destination = from;
     }
+    s->changed = true;
     
     return true;
 }
@@ -76,6 +79,8 @@ void DataController::toggleActor(unsigned int pos) {
         a.type = ActorType::Object;
     else
         a.type = ActorType::Player;
+    
+    s->changed = true;
 }
 
 
@@ -85,11 +90,13 @@ void DataController::toggleActor(unsigned int pos) {
 /// Add new signal
 void DataController::addSignal(unsigned int pos, unsigned int source, unsigned int dest, SignalType type, string name) {
     d->signals.emplace(d->signals.begin() + pos, Signal { type, name, source, dest });
+    s->changed = true;
 }
 
 /// Delete signal at position
 void DataController::removeSignal(unsigned int pos) {
     d->signals.erase(d->signals.begin() + pos);
+    s->changed = true;
 }
 
 /// Move signal to new position
@@ -97,6 +104,7 @@ bool DataController::moveSignal(unsigned int from, int to) {
     if(to >= d->signals.size() || to < 0) return false;
     
     swap(d->signals[from], d->signals[to]);
+    s->changed = true;
     
     return true;
 }
@@ -111,13 +119,58 @@ void DataController::toggleSignal(unsigned int pos) {
         i.type = SignalType::Changing;
     else
         i.type = SignalType::Informing;
+    
+    s->changed = true;
 }
 
 
+/// Create new document
+void DataController::newDocument() {
+    *d = Document();
+    s->mode = Mode::Actors;
+    s->documentName = "New document";
+    s->changed = true;
+    s->selectedActor = 0;
+    s->selectedSignal = 0;
+    s->marginH = 0;
+    s->marginV = 0;
+}
+
+
+/// Save a file
 void DataController::save(string filename) {
+    
     ofstream file(filename);
+    
+    if(file.fail()) throw FileError::SavingError;
+    
     file << json(*d).dump(4) << endl;
     file.close();
+    
+    s->documentName = filename;
+    s->changed = false;
+}
+
+/// Open a file
+void DataController::open(string filename) {
+    
+    ifstream file(filename);
+    
+    if(file.fail()) throw FileError::OpeningError;
+    
+    json j;
+    file >> j;
+    *d = j.get<Document>();
+    
+    file.close();
+    
+    s->mode = Mode::Actors;
+    s->documentName = filename;
+    s->changed = false;
+    s->selectedActor = 0;
+    s->selectedSignal = 0;
+    s->marginH = 0;
+    s->marginV = 0;
 }
 
 
@@ -147,7 +200,12 @@ void SignalCreator::begin(unsigned int pos) {
     s->mode = Mode::NewSignalSource;
     
     // Set new selected actor - for choosing
-    s->selectedActor = min(d->signals[s->selectedSignal].source, d->signals[s->selectedSignal].destination);
+    if(d->signals.size() > 0) {
+        s->selectedActor = min(d->signals[s->selectedSignal].source, d->signals[s->selectedSignal].destination);
+    } else {
+        s->selectedActor = 0;
+    }
+    
 }
 
 /// Save source and continue with destination
@@ -159,7 +217,7 @@ void SignalCreator::next() {
 /// Finish creating new Signal
 void SignalCreator::end() {
     
-    c->addSignal(newSignalPosition, newSignalSource, s->selectedActor, SignalType::Informing, "CREATOR");
+    c->addSignal(newSignalPosition, newSignalSource, s->selectedActor, SignalType::Informing, "New signal");
     s->mode = Mode::Signals;
     s->selectedActor = savedSelectedActor;
     s->selectedSignal = newSignalPosition;

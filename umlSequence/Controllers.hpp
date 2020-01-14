@@ -14,6 +14,13 @@
 
 using namespace std;
 
+
+enum class FileError {
+    OpeningError,
+    SavingError
+};
+
+
 class DataController {
 private:
     Document* d;
@@ -74,7 +81,16 @@ public:
     
     // MARK: File I/O
     
+    /// Create new Document
+    void newDocument();
+    
+    /// Save a file
+    /// @param filename Name of the file
     void save(string filename);
+    
+    /// Open a file
+    /// @param filename Name of the file
+    void open(string filename);
     
     
 };

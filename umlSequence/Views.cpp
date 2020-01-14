@@ -83,6 +83,35 @@ void StatusBarView::draw() {
     wrefresh(w);
 }
 
+//void StatusBarView::setStatus(string status) {
+//    wclear(w);
+//    int width = getmaxx(stdscr);
+//    printSpaces(w, 0, 0, width);
+//    
+//    switch(state->mode) {
+//        case Mode::Actors:
+//            mvwprintw(w, 0, width - 16, "MODE: Actors");
+//            break;
+//        case Mode::Signals: {
+//            mvwprintw(w, 0, width - 16, "MODE: Signals");
+//            break;
+//        }
+//        case Mode::NewSignalSource: {
+//            mvwprintw(w, 0, width - 16, "MODE: Signals+");
+//            break;
+//        }
+//        case Mode::NewSignalDestination: {
+//            mvwprintw(w, 0, width - 16, "MODE: Signals+");
+//            break;
+//        }
+//        default: break;
+//    }
+//    
+//    mvwprintw(w, 0, 1, status.c_str());
+//    
+//    wrefresh(w);
+//}
+
 
 
 
