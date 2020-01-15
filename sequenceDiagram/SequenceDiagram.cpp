@@ -135,7 +135,7 @@ void SequenceDiagram::draw(bool adjustingMargins) {
 
 SequenceDiagram::SequenceDiagram() {
     doc = EXAMPLE_DOCUMENT;
-    state = {Mode::Actors, "Example document", false};
+    state = {Mode::Actors, "Example document"};
     control = new DataController(&doc, &state);
     creator = new SignalCreator(&doc, &state, control);
     
