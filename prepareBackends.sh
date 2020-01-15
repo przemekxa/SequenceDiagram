@@ -14,6 +14,8 @@ tool->setEntry("KEY", p);\
 ' umlSequence/backend-nice/nice-like.cpp
 
 # nano
+rm umlSequence/backend-nano/main.cpp
+rm umlSequence/backend-nano/main
 sed -i.bak '6i\
 #include <string>\
 ' umlSequence/backend-nano/shared.hpp
