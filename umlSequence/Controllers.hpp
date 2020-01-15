@@ -51,6 +51,9 @@ public:
     /// @param pos Position of Actor to be changed
     void toggleActor(unsigned int pos);
     
+    /// Rename Actor
+    /// @param name New name
+    void renameActor(string name);
     
     
     // MARK: Signals
@@ -72,10 +75,13 @@ public:
     /// @param to New position
     bool moveSignal(unsigned int from, int to);
     
-    
     /// Change Signal type (Informing/Changing)
     /// @param pos Position of Signal to be changed
     void toggleSignal(unsigned int pos);
+    
+    /// Rename Signal
+    /// @param name New name
+    void renameSignal(string name);
     
     
     

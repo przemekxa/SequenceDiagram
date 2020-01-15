@@ -83,6 +83,14 @@ void DataController::toggleActor(unsigned int pos) {
     s->changed = true;
 }
 
+/// Rename Actor
+void DataController::renameActor(string name) {
+    if(d->actors.empty()) return;
+    
+    d->actors[s->selectedActor].name = name;
+    s->changed = true;
+}
+
 
 
 // MARK: Signals
@@ -120,6 +128,14 @@ void DataController::toggleSignal(unsigned int pos) {
     else
         i.type = SignalType::Informing;
     
+    s->changed = true;
+}
+
+/// Rename Signal
+void DataController::renameSignal(string name) {
+    if(d->signals.empty()) return;
+    
+    d->signals[s->selectedSignal].name = name;
     s->changed = true;
 }
 

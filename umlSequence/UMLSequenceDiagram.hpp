@@ -215,20 +215,16 @@ public:
     //
     
     void bindActors() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>a");
+        mvaddstr(0, 0, "<CTRL>1          ");
         if(state.mode == Mode::Signals) actorsMode();
     }
     
     void bindSignals() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>s");
+        mvaddstr(0, 0, "<CTRL>2          ");
         if(state.mode == Mode::Actors) signalsMode();
     }
     
     void bindLeft() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<LARROW>");
         if(state.mode == Mode::Actors ||
            state.mode == Mode::NewSignalSource ||
            state.mode == Mode::NewSignalDestination) previousActor();
@@ -236,8 +232,6 @@ public:
     }
     
     void bindRight() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<RARROW>");
         if(state.mode == Mode::Actors ||
            state.mode == Mode::NewSignalSource ||
            state.mode == Mode::NewSignalDestination)  nextActor();
@@ -245,58 +239,65 @@ public:
     }
     
     void bindUp() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<UP>");
         if(state.mode == Mode::Signals) previousSignal();
         else panUp();
     }
     
     void bindDown() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<DOWN>");
         if(state.mode == Mode::Signals) nextSignal();
         else panDown();
     }
     
-    void bindMoveUp() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>m");
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>a");
-        if(state.mode == Mode::Signals) {
-            if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
-                state.selectedSignal--;
+    
+    void bindToggleType() {
+        mvaddstr(0, 0, "<CTRL>t          ");
+        switch(state.mode) {
+            case Mode::Actors:
+                control->toggleActor(state.selectedActor);
                 draw();
-            }
-        }
-        else if(state.mode == Mode::Actors) {
-            if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
-                state.selectedActor--;
+                break;
+            case Mode::Signals:
+                control->toggleSignal(state.selectedSignal);
                 draw();
-            }
+                break;
+            default: break;
         }
     }
     
-    void bindMoveDown() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>M");
+    void bindRename() {
+        mvaddstr(0, 0, "<CTRL>r          ");
         if(state.mode == Mode::Signals) {
-            if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
-                state.selectedSignal++;
-                draw();
-            }
+            control->renameSignal(entries["RENAME"]);
+            draw();
         }
         else if(state.mode == Mode::Actors) {
-            if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
-                state.selectedActor++;
-                draw();
-            }
+            control->renameActor(entries["RENAME"]);
+            draw();
+            draw();
         }
     }
+    
+    void bindDelete() {
+        mvaddstr(0, 0, "<CTRL>x          ");
+        if(state.mode == Mode::Signals) {
+            control->removeSignal(state.selectedSignal);
+            if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
+            if(doc.signals.empty()) state.selectedSignal = 0;
+            resetWindows();
+            draw();
+        }
+        else if(state.mode == Mode::Actors) {
+            control->removeActor(state.selectedActor);
+            if(doc.actors.size() == state.selectedActor) state.selectedActor--;
+            if(doc.actors.empty()) state.selectedActor = 0;
+            resetWindows();
+            draw();
+        }
+    }
+    
     
     void bindNewUp() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>n");
+        mvaddstr(0, 0, "<CTRL><SHIFT>w          ");
         switch(state.mode) {
             case Mode::Actors:
                 control->addActor(state.selectedActor, ActorType::Object, "Unnamed");
@@ -312,8 +313,7 @@ public:
     }
     
     void bindNewDown() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>N");
+        mvaddstr(0, 0, "<CTRL>w          ");
         switch(state.mode) {
             case Mode::Actors:
                 if(!doc.actors.empty()) state.selectedActor++;
@@ -341,72 +341,50 @@ public:
         }
     }
     
-    void bindChange() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>t");
-        switch(state.mode) {
-            case Mode::Actors:
-                control->toggleActor(state.selectedActor);
-                draw();
-                break;
-            case Mode::Signals:
-                control->toggleSignal(state.selectedSignal);
-                draw();
-                break;
-            default: break;
-        }
-    }
     
-    void bindDelete() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>x");
+    void bindMoveUp() {
+        mvaddstr(0, 0, "<CTRL><SHIFT>M          ");
         if(state.mode == Mode::Signals) {
-            control->removeSignal(state.selectedSignal);
-            if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
-            if(doc.signals.empty()) state.selectedSignal = 0;
-            resetWindows();
-            draw();
+            if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
+                state.selectedSignal--;
+                draw();
+            }
         }
         else if(state.mode == Mode::Actors) {
-            control->removeActor(state.selectedActor);
-            if(doc.actors.size() == state.selectedActor) state.selectedActor--;
-            if(doc.actors.empty()) state.selectedActor = 0;
-            resetWindows();
-            draw();
+            if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
+                state.selectedActor--;
+                draw();
+            }
         }
     }
     
-    void bindCancel() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>b");
-        if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
-            creator->cancel();
-            draw();
+    void bindMoveDown() {
+        mvaddstr(0, 0, "<CTRL>m          ");
+        if(state.mode == Mode::Signals) {
+            if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
+                state.selectedSignal++;
+                draw();
+            }
+        }
+        else if(state.mode == Mode::Actors) {
+            if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
+                state.selectedActor++;
+                draw();
+            }
         }
     }
+    
     
     void bindNew() {
+        mvaddstr(0, 0, "<CTRL>n          ");
+        
         control->newDocument();
         resetWindows();
         draw();
     }
     
-    void bindSave() {
-//        mvaddstr(0, 0, "          ");
-//        mvaddstr(0, 0, "<CTRL>a");
-        
-        try {
-            control->save(entries["FILENAME"]);
-            draw();
-            //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
-        } catch(...) {
-            draw();
-            //statusBar->setStatus("Error saving file.");
-        }
-        
-    }
-    
     void bindOpen() {
+        mvaddstr(0, 0, "<CTRL>o          ");
         
         try {
             control->open(entries["FILENAME"]);
@@ -417,6 +395,21 @@ public:
             resetWindows();
             draw();
             //statusBar->setStatus("Error opening file.");
+        }
+        
+    }
+    
+    
+    void bindSave() {
+        mvaddstr(0, 0, "<CTRL>s          ");
+        
+        try {
+            control->save(entries["FILENAME"]);
+            draw();
+            //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
+        } catch(...) {
+            draw();
+            //statusBar->setStatus("Error saving file.");
         }
         
     }
@@ -434,78 +427,69 @@ public:
         
         // Toggle type
         // <CTRL> + T
-        backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindChange(); }, "Change Actor/Signal type");
-        backend->bind(".Edit.ToggleType", [&]() { bindChange(); }, "Change Actor/Signal type");
+        backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindToggleType(); }, "Change Actor/Signal type");
+        backend->bind("#nice#.Edit.ToggleType", [&]() { bindToggleType(); }, "Change Actor/Signal type");
+        
+        // Rename
+        // <CTRL> + R
+        backend->bind("#nano#<CTRL>r%Rename!New name${RENAME}", [this]() { bindRename(); }, "Rename Actor/Signal");
+        backend->bind("#nice#.Edit.Rename${New name: |RENAME}", [this]() { bindRename(); }, "Rename Actor/Signal");
         
         // Delete
         // <CTRL> + X
         backend->bind("#nano#<CTRL>x%Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
-        backend->bind(".Edit.Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
+        backend->bind("#nice#.Edit.Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
+        
+        
         
         // Actors mode
         // <CTRL> + 1
         backend->bind("#nano#<CTRL>1%Actors", [&]() { bindActors(); }, "Actors mode");
-        backend->bind(".Mode.Actors", [&]() { bindActors(); }, "Actors mode");
+        backend->bind("#nice#.Mode.Actors", [&]() { bindActors(); }, "Actors mode");
         
         // Signals mode
         // <CTRL> + 2
         backend->bind("#nano#<CTRL>2%Signals", [&]() { bindSignals(); }, "Actors mode");
-        backend->bind(".Mode.Signals", [&]() { bindSignals(); }, "Actors mode");
+        backend->bind("#nice#.Mode.Signals", [&]() { bindSignals(); }, "Actors mode");
         
 
+        
         // New up
-        // <CTRL> + <SHIFT> + M
-        backend->bind("#nano#<CTRL><SHIFT>C%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
-        backend->bind(".New.Before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+        // <CTRL> + <SHIFT> + W
+        backend->bind("#nano#<CTRL><SHIFT>W%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+        backend->bind("#nice#.New.Before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
         
         // New down
-        // <CTRL> + M
-        backend->bind("#nano#<CTRL>c%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
-        backend->bind(".New.There", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+        // <CTRL> + W
+        backend->bind("#nano#<CTRL>w%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+        backend->bind("#nice#.New.There", [&]() { bindNewDown(); }, "Create Actor/Signal there");
         
         // Move up
         // <CTRL> + <SHIFT> + M
         backend->bind("#nano#<CTRL>M%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
-        backend->bind(".Move.Up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
+        backend->bind("#nice#.Move.Up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
         
         // Move down
         // <CTRL> + M
         backend->bind("#nano#<CTRL>m%Move down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
-        backend->bind(".Move.Down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
+        backend->bind("#nice#.Move.Down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
         
         
         
         // New file
         // <CTRL> + N
         backend->bind("#nano#<CTRL>n%New", [&]() { bindNew(); }, "Create new file");
-        backend->bind(".File.New", [&]() { bindNew(); }, "Create new file");
+        backend->bind("#nice#.File.New", [&]() { bindNew(); }, "Create new file");
         
         // Open a file
         // <CTRL> + O
         backend->bind("#nano#<CTRL>o%Save!Filename${FILENAME}", [&]() { bindOpen(); }, "Open a file");
-        backend->bind(".File.Open${Filename: |FILENAME}", [&]() { bindOpen(); }, "Open a file");
+        backend->bind("#nice#.File.Open${Filename: |FILENAME}", [&]() { bindOpen(); }, "Open a file");
         
         // Save a file
         // <CTRL> + S
         backend->bind("#nano#<CTRL>s%Save!Filename${FILENAME}", [&]() { bindSave(); }, "Save data to a file");
-        backend->bind(".File.Save${Filename: |FILENAME}", [&]() { bindSave(); }, "Save data to a file");
-        
-        
-        
-//        // Arrow Left
-//        backend->bind("#nano#<LARROW>%Left", [&]() { bindLeft(); }, "Left arrow");
-//
-//        // Arrow Right
-//        backend->bind("#nano#<RARROW>%Right", [&]() { bindRight(); }, "Right arrow");
-//
-//        // Arrow Up
-//        backend->bind("#nano#<UARROW>%Up", [&]() { bindUp(); }, "Up arrow");
-//
-//        // Arrow Down
-//        backend->bind("#nano#<DARROW>%Down", [&]() { bindDown(); }, "Down arrow");
-        
-//        // Cancel creating signal
-//        backend->bind("#nano#<CTRL>b%Cancel", [&]() { bindCancel(); }, "Cancel creating signal");
+        backend->bind("#nice#.File.Save${Filename: |FILENAME}", [&]() { bindSave(); }, "Save data to a file");
         
                 
     }
@@ -577,9 +561,9 @@ public:
         
     }
     
-    
+    // TODO: Delete
     void handleKey(int key) {
-        //borderWin->draw();
+        
         switch (key) {
             case 'a':
                 if(state.mode == Mode::Signals) actorsMode();

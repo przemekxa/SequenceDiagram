@@ -17,10 +17,10 @@ int main(int argc, char* argv[]) {
     
     if(argc < 2) {
         cout << "Choose backend by running with option:\n\n";
-        cout << "./" << argv[0] << " i - Nice\n";
-        cout << "./" << argv[0] << " a - Nano\n";
-        cout << "./" << argv[0] << " v - Vim\n";
-        cout << "./" << argv[0] << " m - Mcedit\n";
+        cout << argv[0] << " i - Nice\n";
+        cout << argv[0] << " a - Nano\n";
+        cout << argv[0] << " v - Vim\n";
+        cout << argv[0] << " m - Mcedit\n";
         return 0;
     }
 
