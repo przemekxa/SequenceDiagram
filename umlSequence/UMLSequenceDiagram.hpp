@@ -22,7 +22,79 @@
 
 using namespace std;
 
+class UMLSequenceDiagram : public Tool
+{
+private:
+    
+    // Views
+    ActorsView* actorWin;
+    SignalsView* signalWin;
+    BorderView* borderWin;
+    StatusBarView* statusBar;
+    
+    // Entries storage
+    map<string, string> entries;
+    
+    // Document, state, data controller, signal creator
+    Document doc;
+    DocumentState state;
+    DataController* control;
+    SignalCreator* creator;
 
+    // Mode changes
+    void actorsMode();
+    void signalsMode();
+    
+    // Panning
+    void panLeft();
+    void panRight();
+    void panUp();
+    void panDown();
+    
+    // Actors
+    void nextActor();
+    void previousActor();
+    
+    // Signals
+    void nextSignal();
+    void previousSignal();
+    
+    // Drawing
+    void resetWindows();
+    void draw(bool adjustingMargins = true);
+    
+    // Bindings and keys
+    void bindActors();
+    void bindSignals();
+    void bindLeft();
+    void bindRight();
+    void bindUp();
+    void bindDown();
+    void bindToggleType();
+    void bindRename();
+    void bindDelete();
+    void bindNewUp();
+    void bindNewDown();
+    void bindMoveUp();
+    void bindMoveDown();
+    void bindNew();
+    void bindOpen();
+    void bindSave();
+    void setupBindings();
+    void handleKey();
+    void handleKey(int key);
+    
+public:
+    
+    UMLSequenceDiagram ();
+    void init();
+    void redraw();
+    void setEntry(string field, string value);
+    string getEntry(string field);
+};
+
+
+/*
 // MARK: - Controller
 
 class UMLSequenceDiagram: public Tool {
@@ -701,4 +773,5 @@ public:
     
 };
 
+ */
 #endif /* Controller_hpp */

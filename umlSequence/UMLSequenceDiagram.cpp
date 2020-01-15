@@ -8,4 +8,659 @@
 
 #include "UMLSequenceDiagram.hpp"
 
+//
+// MARK: Mode changes
+//
 
+void UMLSequenceDiagram::actorsMode() {
+    state.mode = Mode::Actors;
+    draw();
+}
+
+void UMLSequenceDiagram::signalsMode() {
+    state.mode = Mode::Signals;
+    draw();
+}
+
+//
+// MARK: Panning
+//
+
+void UMLSequenceDiagram::panLeft() {
+    if(state.marginH > 0) state.marginH--;
+    draw(false);
+}
+
+void UMLSequenceDiagram::panRight() {
+    if(state.marginH < (doc.actors.size() * ActorLength - getmaxx(stdscr) + 2)) state.marginH++;
+    draw(false);
+}
+
+void UMLSequenceDiagram::panUp() {
+    if(state.marginV > 0) state.marginV--;
+    draw(false);
+}
+
+void UMLSequenceDiagram::panDown() {
+    if(state.marginV < (doc.signals.size() * SignalLength - getmaxy(stdscr) + 10)) state.marginV++;
+    draw(false);
+}
+
+//
+// MARK: Actors
+//
+
+void UMLSequenceDiagram::nextActor() {
+    if(doc.actors.size() == 0) return;
+    state.selectedActor = (state.selectedActor + 1) % doc.actors.size();
+    draw();
+}
+
+void UMLSequenceDiagram::previousActor() {
+    if(doc.actors.size() == 0) return;
+    if(state.selectedActor == 0) {
+        state.selectedActor = (unsigned int)doc.actors.size() - 1;
+    } else {
+        state.selectedActor--;
+    }
+    
+    draw();
+}
+
+//
+// MARK: Signals
+//
+
+void UMLSequenceDiagram::nextSignal() {
+    if(doc.signals.size() == 0) return;
+    state.selectedSignal = (state.selectedSignal + 1) % doc.signals.size();
+    draw();
+}
+
+void UMLSequenceDiagram::previousSignal() {
+    if(doc.signals.size() == 0) return;
+    if(state.selectedSignal == 0) {
+        state.selectedSignal = (unsigned int)doc.signals.size() - 1;
+    } else {
+        state.selectedSignal--;
+    }
+    draw();
+}
+
+//
+// MARK: Drawing
+//
+
+void UMLSequenceDiagram::resetWindows() {
+    delete actorWin;
+    delete signalWin;
+    actorWin = new ActorsView(&doc, &state);
+    signalWin = new SignalsView(&doc, &state);
+}
+
+void UMLSequenceDiagram::draw(bool adjustingMargins) {
+    
+    // Adjust margins
+    if(adjustingMargins) {
+        
+        switch(state.mode) {
+            case Mode::Actors:
+            case Mode::NewSignalSource:
+            case Mode::NewSignalDestination:
+                
+                actorWin->adjustMarginsForActor(state.selectedActor);
+                break;
+                
+            case Mode::Signals:
+            default:
+                
+                signalWin->adjustMarginsForSignal(state.selectedSignal);
+                if(!doc.signals.empty()) {
+                    actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].source);
+                    actorWin->adjustMarginsForActor(doc.signals[state.selectedSignal].destination);
+                }
+                
+                break;
+        }
+    }
+    
+    borderWin->draw();
+    actorWin->draw();
+    signalWin->draw();
+    statusBar->draw();
+}
+
+//
+// MARK: - Init
+//
+
+UMLSequenceDiagram::UMLSequenceDiagram() {
+    doc = EXAMPLE_DOCUMENT;
+    state = {Mode::Actors, "Example document", false};
+    control = new DataController(&doc, &state);
+    creator = new SignalCreator(&doc, &state, control);
+    
+    
+    
+    borderWin = new BorderView(&state);
+    actorWin = new ActorsView(&doc, &state);
+    signalWin = new SignalsView(&doc, &state);
+    statusBar = new StatusBarView(&doc, &state);
+    
+    draw();
+}
+
+void UMLSequenceDiagram::init() {
+    setupBindings();
+    draw();
+}
+
+void UMLSequenceDiagram::redraw() {
+    draw(false);
+}
+
+//
+// MARK: Entries
+//
+
+void UMLSequenceDiagram::setEntry(string field, string value) {
+    entries[field] = value;
+}
+
+string UMLSequenceDiagram::getEntry(string field) {
+    if(field == "IS_SAVED") {
+        return state.changed ? "YES" : "NO";
+    }
+    return entries[field];
+}
+
+//
+// MARK: Bindings
+//
+
+void UMLSequenceDiagram::bindActors() {
+    mvaddstr(0, 0, "<CTRL>1          ");
+    if(state.mode == Mode::Signals) actorsMode();
+}
+
+void UMLSequenceDiagram::bindSignals() {
+    mvaddstr(0, 0, "<CTRL>2          ");
+    if(state.mode == Mode::Actors) signalsMode();
+}
+
+void UMLSequenceDiagram::bindLeft() {
+    if(state.mode == Mode::Actors ||
+       state.mode == Mode::NewSignalSource ||
+       state.mode == Mode::NewSignalDestination) previousActor();
+    else panLeft();
+}
+
+void UMLSequenceDiagram::bindRight() {
+    if(state.mode == Mode::Actors ||
+       state.mode == Mode::NewSignalSource ||
+       state.mode == Mode::NewSignalDestination)  nextActor();
+    else panRight();
+}
+
+void UMLSequenceDiagram::bindUp() {
+    if(state.mode == Mode::Signals) previousSignal();
+    else panUp();
+}
+
+void UMLSequenceDiagram::bindDown() {
+    if(state.mode == Mode::Signals) nextSignal();
+    else panDown();
+}
+
+
+void UMLSequenceDiagram::bindToggleType() {
+    mvaddstr(0, 0, "<CTRL>t          ");
+    switch(state.mode) {
+        case Mode::Actors:
+            control->toggleActor(state.selectedActor);
+            draw();
+            break;
+        case Mode::Signals:
+            control->toggleSignal(state.selectedSignal);
+            draw();
+            break;
+        default: break;
+    }
+}
+
+void UMLSequenceDiagram::bindRename() {
+    mvaddstr(0, 0, "<CTRL>r          ");
+    if(state.mode == Mode::Signals) {
+        control->renameSignal(entries["RENAME"]);
+        draw();
+    }
+    else if(state.mode == Mode::Actors) {
+        control->renameActor(entries["RENAME"]);
+        draw();
+        draw();
+    }
+}
+
+void UMLSequenceDiagram::bindDelete() {
+    mvaddstr(0, 0, "<CTRL>x          ");
+    if(state.mode == Mode::Signals) {
+        control->removeSignal(state.selectedSignal);
+        if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
+        if(doc.signals.empty()) state.selectedSignal = 0;
+        resetWindows();
+        draw();
+    }
+    else if(state.mode == Mode::Actors) {
+        control->removeActor(state.selectedActor);
+        if(doc.actors.size() == state.selectedActor) state.selectedActor--;
+        if(doc.actors.empty()) state.selectedActor = 0;
+        resetWindows();
+        draw();
+    }
+}
+
+
+void UMLSequenceDiagram::bindNewUp() {
+    mvaddstr(0, 0, "<CTRL><SHIFT>w          ");
+    switch(state.mode) {
+        case Mode::Actors:
+            control->addActor(state.selectedActor, ActorType::Object, "Unnamed");
+            resetWindows();
+            draw();
+            break;
+        case Mode::Signals:
+            creator->begin(state.selectedSignal);
+            draw();
+            break;
+        default: break;
+    }
+}
+
+void UMLSequenceDiagram::bindNewDown() {
+    mvaddstr(0, 0, "<CTRL>w          ");
+    switch(state.mode) {
+        case Mode::Actors:
+            if(!doc.actors.empty()) state.selectedActor++;
+            control->addActor(state.selectedActor, ActorType::Object, "Unnamed");
+            resetWindows();
+            draw();
+            break;
+        case Mode::Signals:
+            if(!doc.signals.empty())
+                creator->begin(state.selectedSignal + 1);
+            else
+                creator->begin(state.selectedSignal);
+            draw();
+            break;
+        case Mode::NewSignalSource:
+            creator->next();
+            draw();
+            break;
+        case Mode::NewSignalDestination:
+            creator->end();
+            resetWindows();
+            draw();
+            break;
+        default: break;
+    }
+}
+
+
+void UMLSequenceDiagram::bindMoveUp() {
+    mvaddstr(0, 0, "<CTRL><SHIFT>M          ");
+    if(state.mode == Mode::Signals) {
+        if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
+            state.selectedSignal--;
+            draw();
+        }
+    }
+    else if(state.mode == Mode::Actors) {
+        if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
+            state.selectedActor--;
+            draw();
+        }
+    }
+}
+
+void UMLSequenceDiagram::bindMoveDown() {
+    mvaddstr(0, 0, "<CTRL>m          ");
+    if(state.mode == Mode::Signals) {
+        if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
+            state.selectedSignal++;
+            draw();
+        }
+    }
+    else if(state.mode == Mode::Actors) {
+        if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
+            state.selectedActor++;
+            draw();
+        }
+    }
+}
+
+
+void UMLSequenceDiagram::bindNew() {
+    mvaddstr(0, 0, "<CTRL>n          ");
+    
+    control->newDocument();
+    resetWindows();
+    draw();
+}
+
+void UMLSequenceDiagram::bindOpen() {
+    mvaddstr(0, 0, "<CTRL>o          ");
+    
+    try {
+        control->open(entries["FILENAME"]);
+        resetWindows();
+        draw();
+        //statusBar->setStatus("File " + entries["FILENAME"] + " opened.");
+    } catch(...) {
+        resetWindows();
+        draw();
+        //statusBar->setStatus("Error opening file.");
+    }
+    
+}
+
+void UMLSequenceDiagram::bindSave() {
+    mvaddstr(0, 0, "<CTRL>s          ");
+    
+    try {
+        control->save(entries["FILENAME"]);
+        draw();
+        //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
+    } catch(...) {
+        draw();
+        //statusBar->setStatus("Error saving file.");
+    }
+    
+}
+
+//
+// MARK: Bindings setup
+//
+
+void UMLSequenceDiagram::setupBindings() {
+    
+    // Handle keys
+    backend->bind("<EDITION>", [this]() { handleKey(); }, "---");
+    
+    
+    // Toggle type
+    // <CTRL> + T
+    backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindToggleType(); }, "Change Actor/Signal type");
+    backend->bind("#nice#.Edit.ToggleType", [&]() { bindToggleType(); }, "Change Actor/Signal type");
+    
+    // Rename
+    // <CTRL> + R
+    backend->bind("#nano#<CTRL>r%Rename!New name${RENAME}", [this]() { bindRename(); }, "Rename Actor/Signal");
+    backend->bind("#nice#.Edit.Rename${New name: |RENAME}", [this]() { bindRename(); }, "Rename Actor/Signal");
+    
+    // Delete
+    // <CTRL> + X
+    backend->bind("#nano#<CTRL>x%Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
+    backend->bind("#nice#.Edit.Delete", [this]() { bindDelete(); }, "Delete Actor/Signal");
+    
+    
+    
+    // Actors mode
+    // <CTRL> + 1
+    backend->bind("#nano#<CTRL>1%Actors", [&]() { bindActors(); }, "Actors mode");
+    backend->bind("#nice#.Mode.Actors", [&]() { bindActors(); }, "Actors mode");
+    
+    // Signals mode
+    // <CTRL> + 2
+    backend->bind("#nano#<CTRL>2%Signals", [&]() { bindSignals(); }, "Actors mode");
+    backend->bind("#nice#.Mode.Signals", [&]() { bindSignals(); }, "Actors mode");
+    
+
+    
+    // New up
+    // <CTRL> + <SHIFT> + W
+    backend->bind("#nano#<CTRL><SHIFT>W%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+    backend->bind("#nice#.New.Before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+    
+    // New down
+    // <CTRL> + W
+    backend->bind("#nano#<CTRL>w%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+    backend->bind("#nice#.New.There", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+    
+    // Move up
+    // <CTRL> + <SHIFT> + M
+    backend->bind("#nano#<CTRL>M%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
+    backend->bind("#nice#.Move.Up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
+    
+    // Move down
+    // <CTRL> + M
+    backend->bind("#nano#<CTRL>m%Move down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
+    backend->bind("#nice#.Move.Down", [&]() { bindMoveDown(); }, "Move Actor/Signal forward");
+    
+    
+    
+    // New file
+    // <CTRL> + N
+    backend->bind("#nano#<CTRL>n%New", [&]() { bindNew(); }, "Create new file");
+    backend->bind("#nice#.File.New", [&]() { bindNew(); }, "Create new file");
+    
+    // Open a file
+    // <CTRL> + O
+    backend->bind("#nano#<CTRL>o%Save!Filename${FILENAME}", [&]() { bindOpen(); }, "Open a file");
+    backend->bind("#nice#.File.Open${Filename: |FILENAME}", [&]() { bindOpen(); }, "Open a file");
+    
+    // Save a file
+    // <CTRL> + S
+    backend->bind("#nano#<CTRL>s%Save!Filename${FILENAME}", [&]() { bindSave(); }, "Save data to a file");
+    backend->bind("#nice#.File.Save${Filename: |FILENAME}", [&]() { bindSave(); }, "Save data to a file");
+    
+            
+}
+
+//
+// MARK: Handling keys
+//
+void UMLSequenceDiagram::handleKey()
+                 {
+    string s = getEntry("KEY");
+    
+    // Arrow left
+    if(s == "<LARROW>") {
+        if(state.mode == Mode::Actors ||
+           state.mode == Mode::NewSignalSource ||
+           state.mode == Mode::NewSignalDestination) previousActor();
+        else panLeft();
+    }
+    
+    // Arrow right
+    else if(s == "<RARROW>") {
+        if(state.mode == Mode::Actors ||
+           state.mode == Mode::NewSignalSource ||
+           state.mode == Mode::NewSignalDestination)  nextActor();
+        else panRight();
+    }
+    
+    // Arrow up
+    else if(s == "<UARROW>") {
+        if(state.mode == Mode::Signals) previousSignal();
+        else panUp();
+    }
+    
+    // Arrow down
+    else if(s == "<DARROW>") {
+        if(state.mode == Mode::Signals) nextSignal();
+        else panDown();
+    }
+    
+    // Actors mode
+    else if(s == "a") {
+        if(state.mode == Mode::Signals) actorsMode();
+    }
+    
+    // Signals mode
+    else if(s == "s") {
+        if(state.mode == Mode::Actors) signalsMode();
+    }
+    
+    // Signal creator - next
+    else if(s == "n") {
+        switch(state.mode) {
+            case Mode::NewSignalSource:
+                creator->next();
+                draw();
+                break;
+            case Mode::NewSignalDestination:
+                creator->end();
+                resetWindows();
+                draw();
+                break;
+            default: break;
+        }
+    }
+    
+    // Signal creator - cancel
+    else if(s == "q") {
+        if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
+            creator->cancel();
+            draw();
+        }
+    }
+    
+}
+
+/// TODO: Delete
+void UMLSequenceDiagram::handleKey(int key) {
+    
+    switch (key) {
+        case 'a':
+            if(state.mode == Mode::Signals) actorsMode();
+            break;
+        case 's':
+            if(state.mode == Mode::Actors) signalsMode();
+            break;
+        case KEY_LEFT:
+            if(state.mode == Mode::Actors ||
+               state.mode == Mode::NewSignalSource ||
+               state.mode == Mode::NewSignalDestination) previousActor();
+            else panLeft();
+            break;
+        case KEY_RIGHT:
+            if(state.mode == Mode::Actors ||
+               state.mode == Mode::NewSignalSource ||
+               state.mode == Mode::NewSignalDestination)  nextActor();
+            else panRight();
+            break;
+        case KEY_UP:
+            if(state.mode == Mode::Signals) previousSignal();
+            else panUp();
+            break;
+        case KEY_DOWN:
+            if(state.mode == Mode::Signals) nextSignal();
+            else panDown();
+            break;
+        case 'M':
+            if(state.mode == Mode::Signals) {
+                if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
+                    state.selectedSignal--;
+                    draw();
+                }
+            }
+            else if(state.mode == Mode::Actors) {
+                if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
+                    state.selectedActor--;
+                    draw();
+                }
+            }
+            break;
+        case 'm':
+            if(state.mode == Mode::Signals) {
+                if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
+                    state.selectedSignal++;
+                    draw();
+                }
+            }
+            else if(state.mode == Mode::Actors) {
+                if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
+                    state.selectedActor++;
+                    draw();
+                }
+            }
+            break;
+        case 'N':
+            switch(state.mode) {
+                case Mode::Actors:
+                    control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                    resetWindows();
+                    draw();
+                    break;
+                case Mode::Signals:
+                    creator->begin(state.selectedSignal);
+                    draw();
+                    break;
+                default: break;
+            }
+            break;
+        case 'n':
+            switch(state.mode) {
+                case Mode::Actors:
+                    if(!doc.actors.empty()) state.selectedActor++;
+                    control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
+                    resetWindows();
+                    draw();
+                    break;
+                case Mode::Signals:
+                    if(!doc.signals.empty())
+                        creator->begin(state.selectedSignal + 1);
+                    else
+                        creator->begin(state.selectedSignal);
+                    draw();
+                    break;
+                case Mode::NewSignalSource:
+                    creator->next();
+                    draw();
+                    break;
+                case Mode::NewSignalDestination:
+                    creator->end();
+                    resetWindows();
+                    draw();
+                    break;
+                default: break;
+            }
+            break;
+        case 'c':
+            switch(state.mode) {
+                case Mode::Actors:
+                    control->toggleActor(state.selectedActor);
+                    draw();
+                    break;
+                case Mode::Signals:
+                    control->toggleSignal(state.selectedSignal);
+                    draw();
+                    break;
+                default: break;
+            }
+            break;
+        case 'x':
+            if(state.mode == Mode::Signals) {
+                control->removeSignal(state.selectedSignal);
+                if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
+                if(doc.signals.empty()) state.selectedSignal = 0;
+                resetWindows();
+                draw();
+            }
+            else if(state.mode == Mode::Actors) {
+                control->removeActor(state.selectedActor);
+                if(doc.actors.size() == state.selectedActor) state.selectedActor--;
+                if(doc.actors.empty()) state.selectedActor = 0;
+                resetWindows();
+                draw();
+            }
+            break;
+        case 'q':
+            if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
+                creator->cancel();
+                draw();
+            }
+        default:
+            break;
+    }
+}
