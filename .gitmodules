@@ -1,9 +1,9 @@
-[submodule "umlSequence/backend-nano"]
-	path = umlSequence/backend-nano
+[submodule "sequenceDiagram/backend-nano"]
+	path = sequenceDiagram/backend-nano
 	url = https://github.com/mprzypasniak99/backend-nano.git
-[submodule "umlSequence/obiektowe"]
-	path = umlSequence/obiektowe
+[submodule "sequenceDiagram/obiektowe"]
+	path = sequenceDiagram/obiektowe
 	url = https://github.com/przemekxa/obiektowe.git
-[submodule "umlSequence/backend-nice"]
-	path = umlSequence/backend-nice
+[submodule "sequenceDiagram/backend-nice"]
+	path = sequenceDiagram/backend-nice
 	url = https://github.com/Borrubasz/nice-like.git

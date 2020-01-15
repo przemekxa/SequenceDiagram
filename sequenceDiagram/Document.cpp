@@ -1,9 +1,8 @@
 //
 //  Document.cpp
-//  umlSequence
+//  UML Sequence Diagram
 //
-//  Created by Przemek Ambroży on 16/12/2019.
-//  Copyright © 2019 Przemek Ambroży. All rights reserved.
+//  Przemysław Ambroży
 //
 
 #include "Document.hpp"

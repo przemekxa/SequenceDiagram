@@ -1,9 +1,8 @@
 //
 //  Controller.hpp
-//  umlSequence
+//  UML Sequence Diagram
 //
-//  Created by Przemek Ambroży on 23/12/2019.
-//  Copyright © 2019 Przemek Ambroży. All rights reserved.
+//  Przemysław Ambroży
 //
 
 #ifndef Controller_hpp
@@ -22,7 +21,7 @@
 
 using namespace std;
 
-class UMLSequenceDiagram : public Tool
+class SequenceDiagram : public Tool
 {
 private:
     
@@ -86,7 +85,7 @@ private:
     
 public:
     
-    UMLSequenceDiagram ();
+    SequenceDiagram ();
     void init();
     void redraw();
     void setEntry(string field, string value);
@@ -97,7 +96,7 @@ public:
 /*
 // MARK: - Controller
 
-class UMLSequenceDiagram: public Tool {
+class SequenceDiagram: public Tool {
 private:
     
     WINDOW* docWin;
@@ -242,7 +241,7 @@ public:
     DataController* control;
     SignalCreator* creator;
     
-    UMLSequenceDiagram() {
+    SequenceDiagram() {
         doc = EXAMPLE_DOCUMENT;
         state = {Mode::Actors, "Example document", false};
         control = new DataController(&doc, &state);

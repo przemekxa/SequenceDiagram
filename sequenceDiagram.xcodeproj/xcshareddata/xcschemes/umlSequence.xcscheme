@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "01F0B33623A4452B006072B6"
-               BuildableName = "umlSequence"
-               BlueprintName = "umlSequence"
-               ReferencedContainer = "container:umlSequence.xcodeproj">
+               BuildableName = "sequenceDiagram"
+               BlueprintName = "sequenceDiagram"
+               ReferencedContainer = "container:sequenceDiagram.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "01F0B33623A4452B006072B6"
-            BuildableName = "umlSequence"
-            BlueprintName = "umlSequence"
-            ReferencedContainer = "container:umlSequence.xcodeproj">
+            BuildableName = "sequenceDiagram"
+            BlueprintName = "sequenceDiagram"
+            ReferencedContainer = "container:sequenceDiagram.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "01F0B33623A4452B006072B6"
-            BuildableName = "umlSequence"
-            BlueprintName = "umlSequence"
-            ReferencedContainer = "container:umlSequence.xcodeproj">
+            BuildableName = "sequenceDiagram"
+            BlueprintName = "sequenceDiagram"
+            ReferencedContainer = "container:sequenceDiagram.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

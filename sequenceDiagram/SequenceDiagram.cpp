@@ -1,23 +1,22 @@
 //
 //  Controller.cpp
-//  umlSequence
+//  UML Sequence Diagram
 //
-//  Created by Przemek Ambroży on 23/12/2019.
-//  Copyright © 2019 Przemek Ambroży. All rights reserved.
+//  Przemysław Ambroży
 //
 
-#include "UMLSequenceDiagram.hpp"
+#include "SequenceDiagram.hpp"
 
 //
 // MARK: Mode changes
 //
 
-void UMLSequenceDiagram::actorsMode() {
+void SequenceDiagram::actorsMode() {
     state.mode = Mode::Actors;
     draw();
 }
 
-void UMLSequenceDiagram::signalsMode() {
+void SequenceDiagram::signalsMode() {
     state.mode = Mode::Signals;
     draw();
 }
@@ -26,22 +25,22 @@ void UMLSequenceDiagram::signalsMode() {
 // MARK: Panning
 //
 
-void UMLSequenceDiagram::panLeft() {
+void SequenceDiagram::panLeft() {
     if(state.marginH > 0) state.marginH--;
     draw(false);
 }
 
-void UMLSequenceDiagram::panRight() {
+void SequenceDiagram::panRight() {
     if(state.marginH < (doc.actors.size() * ActorLength - getmaxx(stdscr) + 2)) state.marginH++;
     draw(false);
 }
 
-void UMLSequenceDiagram::panUp() {
+void SequenceDiagram::panUp() {
     if(state.marginV > 0) state.marginV--;
     draw(false);
 }
 
-void UMLSequenceDiagram::panDown() {
+void SequenceDiagram::panDown() {
     if(state.marginV < (doc.signals.size() * SignalLength - getmaxy(stdscr) + 10)) state.marginV++;
     draw(false);
 }
@@ -50,13 +49,13 @@ void UMLSequenceDiagram::panDown() {
 // MARK: Actors
 //
 
-void UMLSequenceDiagram::nextActor() {
+void SequenceDiagram::nextActor() {
     if(doc.actors.size() == 0) return;
     state.selectedActor = (state.selectedActor + 1) % doc.actors.size();
     draw();
 }
 
-void UMLSequenceDiagram::previousActor() {
+void SequenceDiagram::previousActor() {
     if(doc.actors.size() == 0) return;
     if(state.selectedActor == 0) {
         state.selectedActor = (unsigned int)doc.actors.size() - 1;
@@ -71,13 +70,13 @@ void UMLSequenceDiagram::previousActor() {
 // MARK: Signals
 //
 
-void UMLSequenceDiagram::nextSignal() {
+void SequenceDiagram::nextSignal() {
     if(doc.signals.size() == 0) return;
     state.selectedSignal = (state.selectedSignal + 1) % doc.signals.size();
     draw();
 }
 
-void UMLSequenceDiagram::previousSignal() {
+void SequenceDiagram::previousSignal() {
     if(doc.signals.size() == 0) return;
     if(state.selectedSignal == 0) {
         state.selectedSignal = (unsigned int)doc.signals.size() - 1;
@@ -91,14 +90,14 @@ void UMLSequenceDiagram::previousSignal() {
 // MARK: Drawing
 //
 
-void UMLSequenceDiagram::resetWindows() {
+void SequenceDiagram::resetWindows() {
     delete actorWin;
     delete signalWin;
     actorWin = new ActorsView(&doc, &state);
     signalWin = new SignalsView(&doc, &state);
 }
 
-void UMLSequenceDiagram::draw(bool adjustingMargins) {
+void SequenceDiagram::draw(bool adjustingMargins) {
     
     // Adjust margins
     if(adjustingMargins) {
@@ -134,7 +133,7 @@ void UMLSequenceDiagram::draw(bool adjustingMargins) {
 // MARK: - Init
 //
 
-UMLSequenceDiagram::UMLSequenceDiagram() {
+SequenceDiagram::SequenceDiagram() {
     doc = EXAMPLE_DOCUMENT;
     state = {Mode::Actors, "Example document", false};
     control = new DataController(&doc, &state);
@@ -150,12 +149,12 @@ UMLSequenceDiagram::UMLSequenceDiagram() {
     draw();
 }
 
-void UMLSequenceDiagram::init() {
+void SequenceDiagram::init() {
     setupBindings();
     draw();
 }
 
-void UMLSequenceDiagram::redraw() {
+void SequenceDiagram::redraw() {
     draw(false);
 }
 
@@ -163,11 +162,11 @@ void UMLSequenceDiagram::redraw() {
 // MARK: Entries
 //
 
-void UMLSequenceDiagram::setEntry(string field, string value) {
+void SequenceDiagram::setEntry(string field, string value) {
     entries[field] = value;
 }
 
-string UMLSequenceDiagram::getEntry(string field) {
+string SequenceDiagram::getEntry(string field) {
     if(field == "IS_SAVED") {
         return state.changed ? "YES" : "NO";
     }
@@ -178,42 +177,42 @@ string UMLSequenceDiagram::getEntry(string field) {
 // MARK: Bindings
 //
 
-void UMLSequenceDiagram::bindActors() {
+void SequenceDiagram::bindActors() {
     mvaddstr(0, 0, "<CTRL>1          ");
     if(state.mode == Mode::Signals) actorsMode();
 }
 
-void UMLSequenceDiagram::bindSignals() {
+void SequenceDiagram::bindSignals() {
     mvaddstr(0, 0, "<CTRL>2          ");
     if(state.mode == Mode::Actors) signalsMode();
 }
 
-void UMLSequenceDiagram::bindLeft() {
+void SequenceDiagram::bindLeft() {
     if(state.mode == Mode::Actors ||
        state.mode == Mode::NewSignalSource ||
        state.mode == Mode::NewSignalDestination) previousActor();
     else panLeft();
 }
 
-void UMLSequenceDiagram::bindRight() {
+void SequenceDiagram::bindRight() {
     if(state.mode == Mode::Actors ||
        state.mode == Mode::NewSignalSource ||
        state.mode == Mode::NewSignalDestination)  nextActor();
     else panRight();
 }
 
-void UMLSequenceDiagram::bindUp() {
+void SequenceDiagram::bindUp() {
     if(state.mode == Mode::Signals) previousSignal();
     else panUp();
 }
 
-void UMLSequenceDiagram::bindDown() {
+void SequenceDiagram::bindDown() {
     if(state.mode == Mode::Signals) nextSignal();
     else panDown();
 }
 
 
-void UMLSequenceDiagram::bindToggleType() {
+void SequenceDiagram::bindToggleType() {
     mvaddstr(0, 0, "<CTRL>t          ");
     switch(state.mode) {
         case Mode::Actors:
@@ -228,7 +227,7 @@ void UMLSequenceDiagram::bindToggleType() {
     }
 }
 
-void UMLSequenceDiagram::bindRename() {
+void SequenceDiagram::bindRename() {
     mvaddstr(0, 0, "<CTRL>r          ");
     if(state.mode == Mode::Signals) {
         control->renameSignal(entries["RENAME"]);
@@ -241,7 +240,7 @@ void UMLSequenceDiagram::bindRename() {
     }
 }
 
-void UMLSequenceDiagram::bindDelete() {
+void SequenceDiagram::bindDelete() {
     mvaddstr(0, 0, "<CTRL>x          ");
     if(state.mode == Mode::Signals) {
         control->removeSignal(state.selectedSignal);
@@ -260,7 +259,7 @@ void UMLSequenceDiagram::bindDelete() {
 }
 
 
-void UMLSequenceDiagram::bindNewUp() {
+void SequenceDiagram::bindNewUp() {
     mvaddstr(0, 0, "<CTRL><SHIFT>w          ");
     switch(state.mode) {
         case Mode::Actors:
@@ -276,7 +275,7 @@ void UMLSequenceDiagram::bindNewUp() {
     }
 }
 
-void UMLSequenceDiagram::bindNewDown() {
+void SequenceDiagram::bindNewDown() {
     mvaddstr(0, 0, "<CTRL>w          ");
     switch(state.mode) {
         case Mode::Actors:
@@ -306,7 +305,7 @@ void UMLSequenceDiagram::bindNewDown() {
 }
 
 
-void UMLSequenceDiagram::bindMoveUp() {
+void SequenceDiagram::bindMoveUp() {
     mvaddstr(0, 0, "<CTRL><SHIFT>M          ");
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
@@ -322,7 +321,7 @@ void UMLSequenceDiagram::bindMoveUp() {
     }
 }
 
-void UMLSequenceDiagram::bindMoveDown() {
+void SequenceDiagram::bindMoveDown() {
     mvaddstr(0, 0, "<CTRL>m          ");
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
@@ -339,7 +338,7 @@ void UMLSequenceDiagram::bindMoveDown() {
 }
 
 
-void UMLSequenceDiagram::bindNew() {
+void SequenceDiagram::bindNew() {
     mvaddstr(0, 0, "<CTRL>n          ");
     
     control->newDocument();
@@ -347,7 +346,7 @@ void UMLSequenceDiagram::bindNew() {
     draw();
 }
 
-void UMLSequenceDiagram::bindOpen() {
+void SequenceDiagram::bindOpen() {
     mvaddstr(0, 0, "<CTRL>o          ");
     
     try {
@@ -363,7 +362,7 @@ void UMLSequenceDiagram::bindOpen() {
     
 }
 
-void UMLSequenceDiagram::bindSave() {
+void SequenceDiagram::bindSave() {
     mvaddstr(0, 0, "<CTRL>s          ");
     
     try {
@@ -381,7 +380,7 @@ void UMLSequenceDiagram::bindSave() {
 // MARK: Bindings setup
 //
 
-void UMLSequenceDiagram::setupBindings() {
+void SequenceDiagram::setupBindings() {
     
     // Handle keys
     backend->bind("<EDITION>", [this]() { handleKey(); }, "---");
@@ -459,7 +458,7 @@ void UMLSequenceDiagram::setupBindings() {
 //
 // MARK: Handling keys
 //
-void UMLSequenceDiagram::handleKey()
+void SequenceDiagram::handleKey()
                  {
     string s = getEntry("KEY");
     
@@ -528,7 +527,7 @@ void UMLSequenceDiagram::handleKey()
 }
 
 /// TODO: Delete
-void UMLSequenceDiagram::handleKey(int key) {
+void SequenceDiagram::handleKey(int key) {
     
     switch (key) {
         case 'a':

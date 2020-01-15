@@ -5,4 +5,4 @@ submodules:
 	./prepareBackends.sh
 
 main:
-	g++ -std=c++14 -lncurses umlSequence/*.cpp umlSequence/backend-nice/*.cpp umlSequence/backend-nano/*.cpp -o main
+	g++ -std=c++14 -lncurses sequenceDiagram/*.cpp sequenceDiagram/backend-nice/*.cpp sequenceDiagram/backend-nano/*.cpp -o main

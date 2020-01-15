@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		0112407023B67E20000D5876 /* nano.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0112406A23B67E1F000D5876 /* nano.cpp */; };
+		019EDAD023CF654F00C62F33 /* SequenceDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 019EDACE23CF654F00C62F33 /* SequenceDiagram.cpp */; };
 		01D59B6723B6040D00107258 /* Controllers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6523B6040D00107258 /* Controllers.cpp */; };
 		01D59B6A23B65F0C00107258 /* Views.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6823B65F0C00107258 /* Views.cpp */; };
-		01D59B6D23B6633E00107258 /* UMLSequenceDiagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */; };
 		01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01E08EE723A7F7780091F4D9 /* Document.cpp */; };
 		01E3934623C8F28100B7908C /* nice-like.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01E3934223C8F25800B7908C /* nice-like.cpp */; };
 		01F0B33B23A4452B006072B6 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 01F0B33A23A4452B006072B6 /* main.cpp */; };
@@ -36,12 +36,12 @@
 		0112406B23B67E1F000D5876 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		0112406C23B67E1F000D5876 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		0112406E23B67E1F000D5876 /* nano.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = nano.hpp; sourceTree = "<group>"; };
+		019EDACE23CF654F00C62F33 /* SequenceDiagram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SequenceDiagram.cpp; sourceTree = "<group>"; };
+		019EDACF23CF654F00C62F33 /* SequenceDiagram.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SequenceDiagram.hpp; sourceTree = "<group>"; };
 		01D59B6523B6040D00107258 /* Controllers.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Controllers.cpp; sourceTree = "<group>"; };
 		01D59B6623B6040D00107258 /* Controllers.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Controllers.hpp; sourceTree = "<group>"; };
 		01D59B6823B65F0C00107258 /* Views.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Views.cpp; sourceTree = "<group>"; };
 		01D59B6923B65F0C00107258 /* Views.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Views.hpp; sourceTree = "<group>"; };
-		01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UMLSequenceDiagram.cpp; sourceTree = "<group>"; };
-		01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = UMLSequenceDiagram.hpp; sourceTree = "<group>"; };
 		01D59B7E23B6704000107258 /* shared.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = shared.hpp; sourceTree = "<group>"; };
 		01D59B7F23B6704000107258 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		01E08EE723A7F7780091F4D9 /* Document.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Document.cpp; sourceTree = "<group>"; };
@@ -52,7 +52,7 @@
 		01E3934323C8F25800B7908C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		01E3934423C8F25800B7908C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		01E3934523C8F25800B7908C /* nice-like.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = "nice-like.hpp"; sourceTree = "<group>"; };
-		01F0B33723A4452B006072B6 /* umlSequence */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = umlSequence; sourceTree = BUILT_PRODUCTS_DIR; };
+		01F0B33723A4452B006072B6 /* sequenceDiagram */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = sequenceDiagram; sourceTree = BUILT_PRODUCTS_DIR; };
 		01F0B33A23A4452B006072B6 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		01F0B34223A445AA006072B6 /* libncurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.tbd; path = usr/lib/libncurses.tbd; sourceTree = SDKROOT; };
 		01F0B34423A45AD4006072B6 /* libform.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libform.tbd; path = usr/lib/libform.tbd; sourceTree = SDKROOT; };
@@ -107,7 +107,7 @@
 		01F0B32E23A4452B006072B6 = {
 			isa = PBXGroup;
 			children = (
-				01F0B33923A4452B006072B6 /* umlSequence */,
+				01F0B33923A4452B006072B6 /* sequenceDiagram */,
 				01F0B33823A4452B006072B6 /* Products */,
 				01F0B34123A445AA006072B6 /* Frameworks */,
 			);
@@ -116,12 +116,12 @@
 		01F0B33823A4452B006072B6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				01F0B33723A4452B006072B6 /* umlSequence */,
+				01F0B33723A4452B006072B6 /* sequenceDiagram */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		01F0B33923A4452B006072B6 /* umlSequence */ = {
+		01F0B33923A4452B006072B6 /* sequenceDiagram */ = {
 			isa = PBXGroup;
 			children = (
 				01D59B7D23B6704000107258 /* obiektowe */,
@@ -132,13 +132,13 @@
 				01D59B6923B65F0C00107258 /* Views.hpp */,
 				01D59B6523B6040D00107258 /* Controllers.cpp */,
 				01D59B6623B6040D00107258 /* Controllers.hpp */,
-				01D59B6B23B6633E00107258 /* UMLSequenceDiagram.cpp */,
-				01D59B6C23B6633E00107258 /* UMLSequenceDiagram.hpp */,
+				019EDACE23CF654F00C62F33 /* SequenceDiagram.cpp */,
+				019EDACF23CF654F00C62F33 /* SequenceDiagram.hpp */,
 				0112406823B67E1F000D5876 /* backend-nano */,
 				01E3934023C8F25800B7908C /* backend-nice */,
 				01E08EEA23A7FA180091F4D9 /* json.hpp */,
 			);
-			path = umlSequence;
+			path = sequenceDiagram;
 			sourceTree = "<group>";
 		};
 		01F0B34123A445AA006072B6 /* Frameworks */ = {
@@ -153,9 +153,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		01F0B33623A4452B006072B6 /* umlSequence */ = {
+		01F0B33623A4452B006072B6 /* sequenceDiagram */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 01F0B33E23A4452B006072B6 /* Build configuration list for PBXNativeTarget "umlSequence" */;
+			buildConfigurationList = 01F0B33E23A4452B006072B6 /* Build configuration list for PBXNativeTarget "sequenceDiagram" */;
 			buildPhases = (
 				01F0B33323A4452B006072B6 /* Sources */,
 				01F0B33423A4452B006072B6 /* Frameworks */,
@@ -165,9 +165,9 @@
 			);
 			dependencies = (
 			);
-			name = umlSequence;
+			name = sequenceDiagram;
 			productName = umlSequence;
-			productReference = 01F0B33723A4452B006072B6 /* umlSequence */;
+			productReference = 01F0B33723A4452B006072B6 /* sequenceDiagram */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -184,7 +184,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 01F0B33223A4452B006072B6 /* Build configuration list for PBXProject "umlSequence" */;
+			buildConfigurationList = 01F0B33223A4452B006072B6 /* Build configuration list for PBXProject "sequenceDiagram" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -197,7 +197,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				01F0B33623A4452B006072B6 /* umlSequence */,
+				01F0B33623A4452B006072B6 /* sequenceDiagram */,
 			);
 		};
 /* End PBXProject section */
@@ -207,9 +207,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01D59B6D23B6633E00107258 /* UMLSequenceDiagram.cpp in Sources */,
 				01D59B6A23B65F0C00107258 /* Views.cpp in Sources */,
 				01E08EE923A7F7780091F4D9 /* Document.cpp in Sources */,
+				019EDAD023CF654F00C62F33 /* SequenceDiagram.cpp in Sources */,
 				01F0B33B23A4452B006072B6 /* main.cpp in Sources */,
 				01E3934623C8F28100B7908C /* nice-like.cpp in Sources */,
 				01D59B6723B6040D00107258 /* Controllers.cpp in Sources */,
@@ -352,7 +352,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		01F0B33223A4452B006072B6 /* Build configuration list for PBXProject "umlSequence" */ = {
+		01F0B33223A4452B006072B6 /* Build configuration list for PBXProject "sequenceDiagram" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				01F0B33C23A4452B006072B6 /* Debug */,
@@ -361,7 +361,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		01F0B33E23A4452B006072B6 /* Build configuration list for PBXNativeTarget "umlSequence" */ = {
+		01F0B33E23A4452B006072B6 /* Build configuration list for PBXNativeTarget "sequenceDiagram" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				01F0B33F23A4452B006072B6 /* Debug */,

@@ -1,17 +1,15 @@
 //
 //  main.cpp
-//  umlSequence
+//  UML Sequence Diagram
 //
-//  Created by Przemek Ambroży on 13/12/2019.
-//  Copyright © 2019 Przemek Ambroży. All rights reserved.
+//  Przemysław Ambroży
 //
 
-#include "UMLSequenceDiagram.hpp"
+#include "SequenceDiagram.hpp"
 #include "backend-nano/nano.hpp"
 #include "backend-nice/nice-like.hpp"
 
 using namespace std;
-using nlohmann::json;
 
 int main(int argc, char* argv[]) {
     
@@ -42,7 +40,7 @@ int main(int argc, char* argv[]) {
             break;
     }
     
-    UMLSequenceDiagram t;
+    SequenceDiagram t;
     
     b->tool = &t;
     t.backend = b;
@@ -52,44 +50,5 @@ int main(int argc, char* argv[]) {
     
     delete b;
     
-    
-//    Nano b;
-//    UMLSequenceDiagram diagram;
-//
-//    b.tool = &diagram;
-//    diagram.backend = &b;
-//
-//    diagram.init();
-//    b.start();
-    
     return 0;
 }
-
-
-//int main() {
-//
-//    int key;
-//
-//    initscr();
-//    keypad(stdscr, TRUE);
-//    cbreak();
-//    noecho();
-//
-//    UMLSequenceDiagram c;
-//
-//    while(1) {
-//        key = getch();
-//        c.handleKey(key);
-//    }
-//    endwin();
-//    return 0;
-//}
-
-
-//int main() {
-//
-//    ofstream file("example.json");
-//    file << json(EXAMPLE_DOCUMENT).dump(4) << endl;
-//
-//    return 0;
-//}
