@@ -135,7 +135,7 @@ void SequenceDiagram::draw(bool adjustingMargins) {
 
 SequenceDiagram::SequenceDiagram() {
     doc = EXAMPLE_DOCUMENT;
-    state = {Mode::Actors, "Example document"};
+    state = {Mode::Actors, "example.json"};
     control = new DataController(&doc, &state);
     creator = new SignalCreator(&doc, &state, control);
     
@@ -168,7 +168,7 @@ void SequenceDiagram::setEntry(string field, string value) {
 
 string SequenceDiagram::getEntry(string field) {
     if(field == "IS_SAVED") {
-        return state.changed ? "YES" : "NO";
+        return state.changed ? "NO" : "YES";
     }
     return entries[field];
 }
@@ -263,7 +263,7 @@ void SequenceDiagram::bindNewUp() {
     mvaddstr(0, 0, "<CTRL><SHIFT>w          ");
     switch(state.mode) {
         case Mode::Actors:
-            control->addActor(state.selectedActor, ActorType::Object, "Unnamed");
+            control->addActor(state.selectedActor, ActorType::Object, "New Actor");
             resetWindows();
             draw();
             break;
@@ -280,7 +280,7 @@ void SequenceDiagram::bindNewDown() {
     switch(state.mode) {
         case Mode::Actors:
             if(!doc.actors.empty()) state.selectedActor++;
-            control->addActor(state.selectedActor, ActorType::Object, "Unnamed");
+            control->addActor(state.selectedActor, ActorType::Object, "New Actor");
             resetWindows();
             draw();
             break;
@@ -366,6 +366,20 @@ void SequenceDiagram::bindSave() {
     mvaddstr(0, 0, "<CTRL>s          ");
     
     try {
+        control->save(state.documentName);
+        draw();
+        //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
+    } catch(...) {
+        draw();
+        //statusBar->setStatus("Error saving file.");
+    }
+    
+}
+
+void SequenceDiagram::bindSaveAs() {
+    mvaddstr(0, 0, "<CTRL><SHIFT>s          ");
+    
+    try {
         control->save(entries["FILENAME"]);
         draw();
         //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
@@ -449,8 +463,13 @@ void SequenceDiagram::setupBindings() {
     
     // Save a file
     // <CTRL> + S
-    backend->bind("#nano#<CTRL>s%Save!Filename${FILENAME}", [&]() { bindSave(); }, "Save data to a file");
-    backend->bind("#nice#.File.Save${Filename: |FILENAME}", [&]() { bindSave(); }, "Save data to a file");
+    backend->bind("#nano#<CTRL>s%Save", [&]() { bindSave(); }, "Save data to existing file");
+    backend->bind("#nice#.File.Save", [&]() { bindSave(); }, "Save data to existing file");
+    
+    // Save a file as...
+    // <CTRL> + <SHIFT> + S
+    backend->bind("#nano#<CTRL><SHIFT>S%Save as!Filename${FILENAME}", [&]() { bindSaveAs(); }, "Save data to a new file");
+    backend->bind("#nice#.File.Save as${Filename: |FILENAME}", [&]() { bindSaveAs(); }, "Save data to a new file");
     
             
 }

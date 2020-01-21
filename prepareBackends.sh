@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # nice
-sed -i.bak '73d' sequenceDiagram/backend-nice/nice-like.cpp
-sed -i.bak '74i\
+sed -i.bak '79d' sequenceDiagram/backend-nice/nice-like.cpp
+sed -i.bak '80i\
 tool->redraw();\
 ' sequenceDiagram/backend-nice/nice-like.cpp
 

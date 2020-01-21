@@ -9,7 +9,7 @@
 #define Views_hpp
 
 #include <stdio.h>
-#include <curses.h>
+#include <ncurses.h>
 #include "Document.hpp"
 
 using namespace std;

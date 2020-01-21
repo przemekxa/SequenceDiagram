@@ -139,11 +139,13 @@ void DataController::renameSignal(string name) {
 }
 
 
+// MARK: Files I/O
+
 /// Create new document
 void DataController::newDocument() {
     *d = Document();
     s->mode = Mode::Actors;
-    s->documentName = "New document";
+    s->documentName = "untitled.json";
     s->changed = true;
     s->selectedActor = 0;
     s->selectedSignal = 0;

@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "1"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/przemek/Studia/PO/umlSequence/umlSequence"
+      customWorkingDirectory = "/Users/przemek/Studia/PO/umlSequence"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
