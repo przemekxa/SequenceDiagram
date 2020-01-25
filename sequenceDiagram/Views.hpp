@@ -17,14 +17,20 @@ using namespace std;
 const int ActorLength = 21;
 const int SignalLength = 4;
 
+class View {
+protected:
+    WINDOW* w;
+    DocumentState* state;
+public:
+    virtual void draw() = 0;
+};
+
 
 // MARK: - Status bar
 
-class StatusBarView {
+class StatusBarView: public View {
 private:
-    WINDOW* w;
     Document* doc;
-    DocumentState* state;
 public:
     
     StatusBarView(Document* d, DocumentState* s);
@@ -39,10 +45,7 @@ public:
 
 // MARK: - Border
 
-class BorderView {
-private:
-    WINDOW* w;
-    DocumentState* state;
+class BorderView: public View {
 public:
     
     BorderView(DocumentState* s);
@@ -56,12 +59,9 @@ public:
 
 // MARK: - Actors
 
-class ActorsView {
+class ActorsView: public View {
 private:
-    WINDOW *w;
     Document* doc;
-    DocumentState* state;
-    
 public:
     
     ActorsView(Document* d, DocumentState* s);
@@ -78,11 +78,9 @@ public:
 // MARK: - Signals
 
 
-class SignalsView {
+class SignalsView: public View {
 private:
-    WINDOW *w;
     Document* doc;
-    DocumentState* state;
     
     void redrawActorLines();
     

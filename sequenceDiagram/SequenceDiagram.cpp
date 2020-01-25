@@ -178,12 +178,10 @@ string SequenceDiagram::getEntry(string field) {
 //
 
 void SequenceDiagram::bindActors() {
-    mvaddstr(0, 0, "<CTRL>1          ");
     if(state.mode == Mode::Signals) actorsMode();
 }
 
 void SequenceDiagram::bindSignals() {
-    mvaddstr(0, 0, "<CTRL>2          ");
     if(state.mode == Mode::Actors) signalsMode();
 }
 
@@ -213,7 +211,6 @@ void SequenceDiagram::bindDown() {
 
 
 void SequenceDiagram::bindToggleType() {
-    mvaddstr(0, 0, "<CTRL>t          ");
     switch(state.mode) {
         case Mode::Actors:
             control->toggleActor(state.selectedActor);
@@ -228,7 +225,6 @@ void SequenceDiagram::bindToggleType() {
 }
 
 void SequenceDiagram::bindRename() {
-    mvaddstr(0, 0, "<CTRL>r          ");
     if(state.mode == Mode::Signals) {
         control->renameSignal(entries["RENAME"]);
         draw();
@@ -241,7 +237,6 @@ void SequenceDiagram::bindRename() {
 }
 
 void SequenceDiagram::bindDelete() {
-    mvaddstr(0, 0, "<CTRL>x          ");
     if(state.mode == Mode::Signals) {
         control->removeSignal(state.selectedSignal);
         if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
@@ -260,7 +255,6 @@ void SequenceDiagram::bindDelete() {
 
 
 void SequenceDiagram::bindNewUp() {
-    mvaddstr(0, 0, "<CTRL><SHIFT>w          ");
     switch(state.mode) {
         case Mode::Actors:
             control->addActor(state.selectedActor, ActorType::Object, "New Actor");
@@ -276,7 +270,6 @@ void SequenceDiagram::bindNewUp() {
 }
 
 void SequenceDiagram::bindNewDown() {
-    mvaddstr(0, 0, "<CTRL>w          ");
     switch(state.mode) {
         case Mode::Actors:
             if(!doc.actors.empty()) state.selectedActor++;
@@ -306,7 +299,6 @@ void SequenceDiagram::bindNewDown() {
 
 
 void SequenceDiagram::bindMoveUp() {
-    mvaddstr(0, 0, "<CTRL><SHIFT>M          ");
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
             state.selectedSignal--;
@@ -322,7 +314,6 @@ void SequenceDiagram::bindMoveUp() {
 }
 
 void SequenceDiagram::bindMoveDown() {
-    mvaddstr(0, 0, "<CTRL>m          ");
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
             state.selectedSignal++;
@@ -339,15 +330,12 @@ void SequenceDiagram::bindMoveDown() {
 
 
 void SequenceDiagram::bindNew() {
-    mvaddstr(0, 0, "<CTRL>n          ");
-    
     control->newDocument();
     resetWindows();
     draw();
 }
 
 void SequenceDiagram::bindOpen() {
-    mvaddstr(0, 0, "<CTRL>o          ");
     
     try {
         control->open(entries["FILENAME"]);
@@ -363,7 +351,6 @@ void SequenceDiagram::bindOpen() {
 }
 
 void SequenceDiagram::bindSave() {
-    mvaddstr(0, 0, "<CTRL>s          ");
     
     try {
         control->save(state.documentName);
@@ -377,7 +364,6 @@ void SequenceDiagram::bindSave() {
 }
 
 void SequenceDiagram::bindSaveAs() {
-    mvaddstr(0, 0, "<CTRL><SHIFT>s          ");
     
     try {
         control->save(entries["FILENAME"]);
@@ -403,7 +389,7 @@ void SequenceDiagram::setupBindings() {
     // Toggle type
     // <CTRL> + T
     backend->bind("#nano#<CTRL>t%Toggle", [&]() { bindToggleType(); }, "Change Actor/Signal type");
-    backend->bind("#nice#.Edit.ToggleType", [&]() { bindToggleType(); }, "Change Actor/Signal type");
+    backend->bind("#nice#.Edit.Toggle type", [&]() { bindToggleType(); }, "Change Actor/Signal type");
     
     // Rename
     // <CTRL> + R
@@ -418,30 +404,30 @@ void SequenceDiagram::setupBindings() {
     
     
     // Actors mode
-    // <CTRL> + 1
-    backend->bind("#nano#<CTRL>1%Actors", [&]() { bindActors(); }, "Actors mode");
+    // <CTRL> + O
+    backend->bind("#nano#<CTRL>o%Actors", [&]() { bindActors(); }, "Actors mode");
     backend->bind("#nice#.Mode.Actors", [&]() { bindActors(); }, "Actors mode");
     
     // Signals mode
-    // <CTRL> + 2
-    backend->bind("#nano#<CTRL>2%Signals", [&]() { bindSignals(); }, "Actors mode");
+    // <CTRL> + P
+    backend->bind("#nano#<CTRL>p%Signals", [&]() { bindSignals(); }, "Actors mode");
     backend->bind("#nice#.Mode.Signals", [&]() { bindSignals(); }, "Actors mode");
     
 
     
     // New up
-    // <CTRL> + <SHIFT> + W
-    backend->bind("#nano#<CTRL><SHIFT>W%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
+    // <CTRL> + W
+    backend->bind("#nano#<CTRL>w%New before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
     backend->bind("#nice#.New.Before", [&]() { bindNewUp(); }, "Create Actor/Signal before this");
     
     // New down
-    // <CTRL> + W
-    backend->bind("#nano#<CTRL>w%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
+    // <CTRL> + E
+    backend->bind("#nano#<CTRL>e%New here", [&]() { bindNewDown(); }, "Create Actor/Signal there");
     backend->bind("#nice#.New.There", [&]() { bindNewDown(); }, "Create Actor/Signal there");
     
     // Move up
-    // <CTRL> + <SHIFT> + M
-    backend->bind("#nano#<CTRL>M%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
+    // <CTRL> + B
+    backend->bind("#nano#<CTRL>b%Move up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
     backend->bind("#nice#.Move.Up", [&]() { bindMoveUp(); }, "Move Actor/Signal backward");
     
     // Move down
@@ -467,8 +453,8 @@ void SequenceDiagram::setupBindings() {
     backend->bind("#nice#.File.Save", [&]() { bindSave(); }, "Save data to existing file");
     
     // Save a file as...
-    // <CTRL> + <SHIFT> + S
-    backend->bind("#nano#<CTRL><SHIFT>S%Save as!Filename${FILENAME}", [&]() { bindSaveAs(); }, "Save data to a new file");
+    // <CTRL> + Z
+    backend->bind("#nano#<CTRL>z%Save as!Filename${FILENAME}", [&]() { bindSaveAs(); }, "Save data to a new file");
     backend->bind("#nice#.File.Save as${Filename: |FILENAME}", [&]() { bindSaveAs(); }, "Save data to a new file");
     
             
