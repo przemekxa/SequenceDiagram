@@ -41,14 +41,19 @@ void StatusBarView::draw() {
     switch(state->mode) {
         case Mode::Actors:
             
-            if(!doc->actors.empty())
+            if(status != "") {
+                mvwprintw(w, 0, 1, status.c_str());
+            } else if(!doc->actors.empty()) {
                 mvwprintw(w, 0, 1, doc->actors[state->selectedActor].name.c_str());
+            }
             mvwprintw(w, 0, width - 16, "MODE: Actors");
             break;
             
         case Mode::Signals: {
             
-            if(!doc->signals.empty()) {
+            if(status != "") {
+                mvwprintw(w, 0, 1, status.c_str());
+            } else if(!doc->signals.empty()) {
                 Signal& s = doc->signals[state->selectedSignal];
                 string t = s.name;
                 t += " [" + doc->actors[s.source].name;
@@ -65,14 +70,22 @@ void StatusBarView::draw() {
         }
         case Mode::NewSignalSource: {
             
-            mvwprintw(w, 0, 1, "Select SOURCE and press [n] ([q] to cancel)");
+            if(status != "") {
+                mvwprintw(w, 0, 1, status.c_str());
+            } else {
+                mvwprintw(w, 0, 1, "Select SOURCE and press [n] ([q] to cancel)");
+            }
             mvwprintw(w, 0, width - 16, "MODE: Signals+");
             
             break;
         }
         case Mode::NewSignalDestination: {
             
-            mvwprintw(w, 0, 1, "Select DESTINATION and press [n] ([q] to cancel)");
+            if(status != "") {
+                mvwprintw(w, 0, 1, status.c_str());
+            } else {
+                mvwprintw(w, 0, 1, "Select DESTINATION and press [n] ([q] to cancel)");
+            }
             mvwprintw(w, 0, width - 16, "MODE: Signals+");
             
             break;
@@ -82,36 +95,15 @@ void StatusBarView::draw() {
     wrefresh(w);
 }
 
-//void StatusBarView::setStatus(string status) {
-//    wclear(w);
-//    int width = getmaxx(stdscr);
-//    printSpaces(w, 0, 0, width);
-//    
-//    switch(state->mode) {
-//        case Mode::Actors:
-//            mvwprintw(w, 0, width - 16, "MODE: Actors");
-//            break;
-//        case Mode::Signals: {
-//            mvwprintw(w, 0, width - 16, "MODE: Signals");
-//            break;
-//        }
-//        case Mode::NewSignalSource: {
-//            mvwprintw(w, 0, width - 16, "MODE: Signals+");
-//            break;
-//        }
-//        case Mode::NewSignalDestination: {
-//            mvwprintw(w, 0, width - 16, "MODE: Signals+");
-//            break;
-//        }
-//        default: break;
-//    }
-//    
-//    mvwprintw(w, 0, 1, status.c_str());
-//    
-//    wrefresh(w);
-//}
+// MARK: Status
 
+void StatusBarView::setStatus(string status) {
+    this->status = status;
+}
 
+void StatusBarView::resetStatus() {
+    this->status = "";
+}
 
 
 

@@ -178,39 +178,18 @@ string SequenceDiagram::getEntry(string field) {
 //
 
 void SequenceDiagram::bindActors() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Signals) actorsMode();
 }
 
 void SequenceDiagram::bindSignals() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Actors) signalsMode();
-}
-
-void SequenceDiagram::bindLeft() {
-    if(state.mode == Mode::Actors ||
-       state.mode == Mode::NewSignalSource ||
-       state.mode == Mode::NewSignalDestination) previousActor();
-    else panLeft();
-}
-
-void SequenceDiagram::bindRight() {
-    if(state.mode == Mode::Actors ||
-       state.mode == Mode::NewSignalSource ||
-       state.mode == Mode::NewSignalDestination)  nextActor();
-    else panRight();
-}
-
-void SequenceDiagram::bindUp() {
-    if(state.mode == Mode::Signals) previousSignal();
-    else panUp();
-}
-
-void SequenceDiagram::bindDown() {
-    if(state.mode == Mode::Signals) nextSignal();
-    else panDown();
 }
 
 
 void SequenceDiagram::bindToggleType() {
+    statusBar->resetStatus();
     switch(state.mode) {
         case Mode::Actors:
             control->toggleActor(state.selectedActor);
@@ -225,6 +204,7 @@ void SequenceDiagram::bindToggleType() {
 }
 
 void SequenceDiagram::bindRename() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Signals) {
         control->renameSignal(entries["RENAME"]);
         draw();
@@ -237,6 +217,7 @@ void SequenceDiagram::bindRename() {
 }
 
 void SequenceDiagram::bindDelete() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Signals) {
         control->removeSignal(state.selectedSignal);
         if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
@@ -255,6 +236,7 @@ void SequenceDiagram::bindDelete() {
 
 
 void SequenceDiagram::bindNewUp() {
+    statusBar->resetStatus();
     switch(state.mode) {
         case Mode::Actors:
             control->addActor(state.selectedActor, ActorType::Object, "New Actor");
@@ -270,6 +252,7 @@ void SequenceDiagram::bindNewUp() {
 }
 
 void SequenceDiagram::bindNewDown() {
+    statusBar->resetStatus();
     switch(state.mode) {
         case Mode::Actors:
             if(!doc.actors.empty()) state.selectedActor++;
@@ -299,6 +282,7 @@ void SequenceDiagram::bindNewDown() {
 
 
 void SequenceDiagram::bindMoveUp() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
             state.selectedSignal--;
@@ -314,6 +298,7 @@ void SequenceDiagram::bindMoveUp() {
 }
 
 void SequenceDiagram::bindMoveDown() {
+    statusBar->resetStatus();
     if(state.mode == Mode::Signals) {
         if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
             state.selectedSignal++;
@@ -332,6 +317,7 @@ void SequenceDiagram::bindMoveDown() {
 void SequenceDiagram::bindNew() {
     control->newDocument();
     resetWindows();
+    statusBar->setStatus("Created new document");
     draw();
 }
 
@@ -340,12 +326,12 @@ void SequenceDiagram::bindOpen() {
     try {
         control->open(entries["FILENAME"]);
         resetWindows();
+        statusBar->setStatus("File \"" + entries["FILENAME"] + "\" opened");
         draw();
-        //statusBar->setStatus("File " + entries["FILENAME"] + " opened.");
     } catch(...) {
         resetWindows();
+        statusBar->setStatus("Error opening file \"" + entries["FILENAME"] + "\"");
         draw();
-        //statusBar->setStatus("Error opening file.");
     }
     
 }
@@ -354,11 +340,11 @@ void SequenceDiagram::bindSave() {
     
     try {
         control->save(state.documentName);
+        statusBar->setStatus("File \"" + state.documentName + "\" saved");
         draw();
-        //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
     } catch(...) {
+        statusBar->setStatus("Error saving file \"" + entries["FILENAME"] + "\"");
         draw();
-        //statusBar->setStatus("Error saving file.");
     }
     
 }
@@ -366,12 +352,17 @@ void SequenceDiagram::bindSave() {
 void SequenceDiagram::bindSaveAs() {
     
     try {
-        control->save(entries["FILENAME"]);
+        if(entries["FILENAME"] == "") {
+            control->save(state.documentName);
+            statusBar->setStatus("File \"" + state.documentName + "\" saved");
+        } else {
+            control->save(entries["FILENAME"]);
+            statusBar->setStatus("File \"" + entries["FILENAME"] + "\" saved");
+        }
         draw();
-        //statusBar->setStatus("File " + entries["FILENAME"] + " saved.");
     } catch(...) {
+        statusBar->setStatus("Error saving file \"" + entries["FILENAME"] + "\"");
         draw();
-        //statusBar->setStatus("Error saving file.");
     }
     
 }
@@ -404,13 +395,13 @@ void SequenceDiagram::setupBindings() {
     
     
     // Actors mode
-    // <CTRL> + O
-    backend->bind("#nano#<CTRL>o%Actors", [&]() { bindActors(); }, "Actors mode");
+    // <CTRL> + K
+    backend->bind("#nano#<CTRL>k%Actors", [&]() { bindActors(); }, "Actors mode");
     backend->bind("#nice#.Mode.Actors", [&]() { bindActors(); }, "Actors mode");
     
     // Signals mode
-    // <CTRL> + P
-    backend->bind("#nano#<CTRL>p%Signals", [&]() { bindSignals(); }, "Actors mode");
+    // <CTRL> + L
+    backend->bind("#nano#<CTRL>l%Signals", [&]() { bindSignals(); }, "Actors mode");
     backend->bind("#nice#.Mode.Signals", [&]() { bindSignals(); }, "Actors mode");
     
 
@@ -444,7 +435,7 @@ void SequenceDiagram::setupBindings() {
     
     // Open a file
     // <CTRL> + O
-    backend->bind("#nano#<CTRL>o%Save!Filename${FILENAME}", [&]() { bindOpen(); }, "Open a file");
+    backend->bind("#nano#<CTRL>o%Open!Filename${FILENAME}", [&]() { bindOpen(); }, "Open a file");
     backend->bind("#nice#.File.Open${Filename: |FILENAME}", [&]() { bindOpen(); }, "Open a file");
     
     // Save a file
@@ -463,9 +454,9 @@ void SequenceDiagram::setupBindings() {
 //
 // MARK: Handling keys
 //
-void SequenceDiagram::handleKey()
-                 {
+void SequenceDiagram::handleKey() {
     string s = getEntry("KEY");
+    statusBar->resetStatus();
     
     // Arrow left
     if(s == "<LARROW>") {
@@ -497,12 +488,12 @@ void SequenceDiagram::handleKey()
     
     // Actors mode
     else if(s == "a") {
-        if(state.mode == Mode::Signals) actorsMode();
+        bindActors();
     }
     
     // Signals mode
     else if(s == "s") {
-        if(state.mode == Mode::Actors) signalsMode();
+        bindSignals();
     }
     
     // Signal creator - next
@@ -529,142 +520,4 @@ void SequenceDiagram::handleKey()
         }
     }
     
-}
-
-/// TODO: Delete
-void SequenceDiagram::handleKey(int key) {
-    
-    switch (key) {
-        case 'a':
-            if(state.mode == Mode::Signals) actorsMode();
-            break;
-        case 's':
-            if(state.mode == Mode::Actors) signalsMode();
-            break;
-        case KEY_LEFT:
-            if(state.mode == Mode::Actors ||
-               state.mode == Mode::NewSignalSource ||
-               state.mode == Mode::NewSignalDestination) previousActor();
-            else panLeft();
-            break;
-        case KEY_RIGHT:
-            if(state.mode == Mode::Actors ||
-               state.mode == Mode::NewSignalSource ||
-               state.mode == Mode::NewSignalDestination)  nextActor();
-            else panRight();
-            break;
-        case KEY_UP:
-            if(state.mode == Mode::Signals) previousSignal();
-            else panUp();
-            break;
-        case KEY_DOWN:
-            if(state.mode == Mode::Signals) nextSignal();
-            else panDown();
-            break;
-        case 'M':
-            if(state.mode == Mode::Signals) {
-                if(control->moveSignal(state.selectedSignal, state.selectedSignal - 1)) {
-                    state.selectedSignal--;
-                    draw();
-                }
-            }
-            else if(state.mode == Mode::Actors) {
-                if(control->moveActor(state.selectedActor, state.selectedActor - 1)) {
-                    state.selectedActor--;
-                    draw();
-                }
-            }
-            break;
-        case 'm':
-            if(state.mode == Mode::Signals) {
-                if(control->moveSignal(state.selectedSignal, state.selectedSignal + 1)) {
-                    state.selectedSignal++;
-                    draw();
-                }
-            }
-            else if(state.mode == Mode::Actors) {
-                if(control->moveActor(state.selectedActor, state.selectedActor + 1)) {
-                    state.selectedActor++;
-                    draw();
-                }
-            }
-            break;
-        case 'N':
-            switch(state.mode) {
-                case Mode::Actors:
-                    control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
-                    resetWindows();
-                    draw();
-                    break;
-                case Mode::Signals:
-                    creator->begin(state.selectedSignal);
-                    draw();
-                    break;
-                default: break;
-            }
-            break;
-        case 'n':
-            switch(state.mode) {
-                case Mode::Actors:
-                    if(!doc.actors.empty()) state.selectedActor++;
-                    control->addActor(state.selectedActor, ActorType::Object, "UNNAMED");
-                    resetWindows();
-                    draw();
-                    break;
-                case Mode::Signals:
-                    if(!doc.signals.empty())
-                        creator->begin(state.selectedSignal + 1);
-                    else
-                        creator->begin(state.selectedSignal);
-                    draw();
-                    break;
-                case Mode::NewSignalSource:
-                    creator->next();
-                    draw();
-                    break;
-                case Mode::NewSignalDestination:
-                    creator->end();
-                    resetWindows();
-                    draw();
-                    break;
-                default: break;
-            }
-            break;
-        case 'c':
-            switch(state.mode) {
-                case Mode::Actors:
-                    control->toggleActor(state.selectedActor);
-                    draw();
-                    break;
-                case Mode::Signals:
-                    control->toggleSignal(state.selectedSignal);
-                    draw();
-                    break;
-                default: break;
-            }
-            break;
-        case 'x':
-            if(state.mode == Mode::Signals) {
-                control->removeSignal(state.selectedSignal);
-                if(doc.signals.size() == state.selectedSignal) state.selectedSignal--;
-                if(doc.signals.empty()) state.selectedSignal = 0;
-                resetWindows();
-                draw();
-            }
-            else if(state.mode == Mode::Actors) {
-                control->removeActor(state.selectedActor);
-                if(doc.actors.size() == state.selectedActor) state.selectedActor--;
-                if(doc.actors.empty()) state.selectedActor = 0;
-                resetWindows();
-                draw();
-            }
-            break;
-        case 'q':
-            if(state.mode == Mode::NewSignalSource || state.mode == Mode::NewSignalDestination) {
-                creator->cancel();
-                draw();
-            }
-        default:
-            break;
-    }
 }

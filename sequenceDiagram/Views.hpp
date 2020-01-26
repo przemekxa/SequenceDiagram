@@ -31,12 +31,16 @@ public:
 class StatusBarView: public View {
 private:
     Document* doc;
+    string status;
+    
+    void drawStatus();
 public:
     
     StatusBarView(Document* d, DocumentState* s);
     ~StatusBarView();
     
-    //void setStatus(string status);
+    void setStatus(string status);
+    void resetStatus();
     void draw();
 };
 
