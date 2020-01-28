@@ -220,35 +220,12 @@ void ActorsView::draw() {
 
 void SignalsView::redrawActorLines() {
         
-        // Thin lines
-        for(int i = 0; i < doc->actors.size(); i++) {
-            mvwvline(w, 0, ActorLength * i + (ActorLength / 2), '|', SignalLength * doc->signals.size());
-        }
-        
-        // Lifetime lines
-//
-//        bool* sigHas = new bool [doc->actors.size()] { false };
-//        int* sigMin = new int [doc->actors.size()] { INT_MAX };
-//        int* sigMax = new int [doc->actors.size()] { 0 };
-//
-//        for(auto const& s : doc->signals) {
-//            sigHas[s.source] = true;
-//            sigHas[s.destination] = true;
-//            if(s.id < sigMin[s.source]) sigMin[s.source] = s.id;
-//            if(s.id > sigMax[s.destination]) sigMax[s.destination] = s.id;
-//        }
-//
-//
-//        for(int i = 0; i < doc->actors.size(); i++) {
-//            if(sigHas[i] && sigMin[i] != sigMax[i]) {
-//                mvwvline(w, sigMin[i] * SignalLength + 2, ActorLength * i + (ActorLength / 2), 'X', sigMax[i] * SignalLength - 1);
-//            }
-//        }
-//
-//        delete [] sigHas;
-//        delete [] sigMin;
-//        delete [] sigMax;
+    // Thin lines
+    for(int i = 0; i < doc->actors.size(); i++) {
+        mvwvline(w, 0, ActorLength * i + (ActorLength / 2), '|', SignalLength * doc->signals.size());
     }
+    
+}
 
 
 SignalsView::SignalsView(Document* d, DocumentState* s) {
